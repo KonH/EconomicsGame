@@ -1,0 +1,20 @@
+{
+    "name": "EconomicsGame.Systems",
+    "rootNamespace": "",
+    "references": [
+        "GUID:560b04d1a97f54a4e82edc0cbbb69285",
+        "GUID:656c2c43d3cfe4855bd40e058874b0be",
+        "GUID:d1de89d4f278940bd9706f64dbc7425d",
+        "GUID:0cfd4ab0deee447b49d32bc9c789246a",
+        "GUID:a756e50939e274a64a5b15e80ed5a2ec"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

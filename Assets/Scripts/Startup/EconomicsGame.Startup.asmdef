@@ -1,0 +1,22 @@
+{
+    "name": "EconomicsGame.Startup",
+    "rootNamespace": "",
+    "references": [
+        "GUID:560b04d1a97f54a4e82edc0cbbb69285",
+        "GUID:656c2c43d3cfe4855bd40e058874b0be",
+        "GUID:0104ae351448541ee9a4ab55eb9d8b69",
+        "GUID:d1de89d4f278940bd9706f64dbc7425d",
+        "GUID:a7454ac857f56423cb4a16e4d3d194de",
+        "GUID:0cfd4ab0deee447b49d32bc9c789246a",
+        "GUID:a756e50939e274a64a5b15e80ed5a2ec"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

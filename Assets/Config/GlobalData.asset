@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21ed2dc2915f4d7b8978114ac10f49cc, type: 3}
+  m_Name: GlobalData
+  m_EditorClassIdentifier: 
+  _locationWorldViewPrefab: {fileID: -8991791688125961394, guid: 2107fef33b57a43efaff1f9e82cbceba, type: 3}
+  _characterWorldViewPrefab: {fileID: 2239256788007498237, guid: c520840ff27c7479e81ed5e1af71b269, type: 3}
+  _itemViewPrefab: {fileID: 6543481119660506692, guid: 03f20a485a8bc4f87b270cb76dd3ad8a, type: 3}
+  _tradeViewPrefab: {fileID: 6379267072956214840, guid: b0e475aef9a6c4afeb74913ad16bc623, type: 3}
+  _statViewPrefab: {fileID: 8795223528954512452, guid: 962aa11a6a7b4402d80117b6b589337e, type: 3}
+  _locationCharacterViewPrefab: {fileID: 3835140254997676951, guid: 2c338c13ae4f0485bad85e4489d39378, type: 3}
+  _locationActionViewPrefab: {fileID: 6647718257042795364, guid: 0a9adc2ea7a364716b16e318a4d18531, type: 3}
