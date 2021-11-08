@@ -28,8 +28,60 @@ namespace EconomicsGame.Tests {
 			entities.Should().NotBeEmpty();
 		}
 
-		EcsWorld InitWorld(List<List<object>> data) {
+		[Test]
+		public void IsLocationLoaded() {
 			var runtimeData = new RuntimeData(new InMemoryStore());
+			var data = CreateSampleData(location: new Location { Id = 1 });
+
+			var world = InitWorld(runtimeData, data);
+
+			EcsEntity[] entities = null;
+			world.GetAllEntities(ref entities);
+			entities.Should().Contain(e => IsValidLocation(e));
+			runtimeData.LocationProvider.TryGetEntity(1, out _).Should().BeTrue();
+			runtimeData.IdFactory.GenerateNewId<Location>().Should().Be(2);
+			runtimeData.Locations.Should().NotBeEmpty();
+		}
+
+		bool IsValidLocation(EcsEntity e) =>
+			e.Has<Location>() && e.Get<Location>().Id == 1;
+
+		[Test]
+		public void IsCharacterLoaded() {
+			var runtimeData = new RuntimeData(new InMemoryStore());
+			var data = CreateSampleData(character: new Character { Id = 1 });
+
+			var world = InitWorld(runtimeData, data);
+
+			EcsEntity[] entities = null;
+			world.GetAllEntities(ref entities);
+			entities.Should().Contain(e => IsValidCharacter(e));
+			runtimeData.CharacterProvider.TryGetEntity(1, out _).Should().BeTrue();
+			runtimeData.IdFactory.GenerateNewId<Character>().Should().Be(2);
+			runtimeData.Characters.Should().NotBeEmpty();
+		}
+
+		bool IsValidCharacter(EcsEntity e) =>
+			e.Has<Character>() && e.Get<Character>().Id == 1;
+
+		[Test]
+		public void IsItemLoaded() {
+			var runtimeData = new RuntimeData(new InMemoryStore());
+			var data = CreateSampleData(item: new Item { Id = 1 });
+
+			var world = InitWorld(runtimeData, data);
+
+			EcsEntity[] entities = null;
+			world.GetAllEntities(ref entities);
+			entities.Should().Contain(e => IsValidItem(e));
+			runtimeData.ItemProvider.TryGetEntity(1, out _).Should().BeTrue();
+			runtimeData.IdFactory.GenerateNewId<Item>().Should().Be(2);
+		}
+
+		bool IsValidItem(EcsEntity e) =>
+			e.Has<Item>() && e.Get<Item>().Id == 1;
+
+		EcsWorld InitWorld(RuntimeData runtimeData, List<List<object>> data) {
 			if ( data != null ) {
 				runtimeData.PersistantService.Save(data);
 			}
@@ -42,16 +94,18 @@ namespace EconomicsGame.Tests {
 			return world;
 		}
 
-		List<List<object>> CreateSampleData() {
+		EcsWorld InitWorld(List<List<object>> data) => InitWorld(new RuntimeData(new InMemoryStore()), data);
+
+		List<List<object>> CreateSampleData(Location location = default, Character character = default, Item item = default) {
 			var data = new List<List<object>> {
 				new List<object> {
-					new Location()
+					location
 				},
 				new List<object> {
-					new Character()
+					character
 				},
 				new List<object> {
-					new Item()
+					item
 				}
 			};
 			return data;

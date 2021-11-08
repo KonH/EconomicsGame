@@ -1,10 +1,8 @@
-using System.Reflection;
 using EconomicsGame.Components;
 using EconomicsGame.Services;
 using Leopotam.Ecs;
 using UniRx;
 using UnityEngine;
-using UnityEngine.Assertions;
 
 namespace EconomicsGame.Systems {
 	// TODO: refactor to proper use elements
@@ -17,46 +15,10 @@ namespace EconomicsGame.Systems {
 		};
 
 		public void Init() {
-			if ( _runtimeData.PersistantService.CanLoad ) {
-				Load();
-			} else {
+			var loader = new WorldLoader(_world, _runtimeData);
+			if ( !loader.TryLoad() ) {
 				Generate();
 			}
-		}
-
-		void Load() {
-			// TODO: to custom system/service
-			var data = _runtimeData.PersistantService.Load();
-			var copyComponentDataGenericMethod = typeof(WorldInitSystem).GetMethod(nameof(CopyComponentData), BindingFlags.Instance | BindingFlags.NonPublic);
-			Assert.IsNotNull(copyComponentDataGenericMethod);
-			foreach ( var entityData in data ) {
-				var entity = _world.NewEntity();
-				foreach ( var componentData in entityData ) {
-					var componentType = componentData.GetType();
-					var copyComponentDataMethod = copyComponentDataGenericMethod.MakeGenericMethod(componentType);
-					copyComponentDataMethod.Invoke(this, new [] { entity, componentData });
-					if ( componentType == typeof(Location) ) {
-						ref var location = ref entity.Get<Location>();
-						_runtimeData.IdFactory.AdvanceTo<Location>(location.Id);
-						_runtimeData.LocationProvider.Assign(location.Id, entity);
-						_runtimeData.Locations.Add(entity);
-					} else if ( componentType == typeof(Character) ) {
-						ref var character = ref entity.Get<Character>();
-						_runtimeData.IdFactory.AdvanceTo<Character>(character.Id);
-						_runtimeData.CharacterProvider.Assign(character.Id, entity);
-						_runtimeData.Characters.Add(entity);
-					} else if ( componentType == typeof(Item) ) {
-						ref var item = ref entity.Get<Item>();
-						_runtimeData.IdFactory.AdvanceTo<Item>(item.Id);
-						_runtimeData.ItemProvider.Assign(item.Id, entity);
-					}
-				}
-			}
-		}
-
-		void CopyComponentData<T>(EcsEntity entity, T data) where T : struct {
-			ref var component = ref entity.Get<T>();
-			component = data;
 		}
 
 		// TODO: to custom system/service
