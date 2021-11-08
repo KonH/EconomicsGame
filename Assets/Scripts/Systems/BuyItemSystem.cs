@@ -23,7 +23,8 @@ namespace EconomicsGame.Systems {
 				ref var buyEvent = ref _filter.Get3(itemIdx);
 				var buyCount = buyEvent.Count;
 				var totalPrice = trade.PricePerUnit * buyCount;
-				var buyerCharacterEntity = characterService.GetEntity(buyEvent.Buyer);
+				var buyer = buyEvent.Buyer;
+				var buyerCharacterEntity = characterService.GetEntity(buyer);
 				if ( !TryChangeCash(idFactory, itemService, ref buyerCharacterEntity, -totalPrice) ) {
 					continue;
 				}
@@ -33,6 +34,7 @@ namespace EconomicsGame.Systems {
 				boughtItemEntity.Del<Trade>();
 				ref var boughtItem = ref boughtItemEntity.Get<Item>();
 				boughtItem.Id = idFactory.GenerateNewId<Item>();
+				boughtItem.Owner = buyer;
 				boughtItem.Count = new ReactiveProperty<long>(buyCount);
 				var sellerCharacter = characterService.GetEntity(itemToBuy.Owner);
 				TryChangeCash(idFactory, itemService, ref sellerCharacter, totalPrice);
