@@ -17,5 +17,6 @@ Desktop.ini
 .DS_Store
 Library
 Logs
+Temp
 *.csproj
 *.sln
