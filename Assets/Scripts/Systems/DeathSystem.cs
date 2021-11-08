@@ -1,4 +1,5 @@
 using EconomicsGame.Components;
+using EconomicsGame.Services;
 using Leopotam.Ecs;
 using UnityEngine;
 
@@ -16,7 +17,7 @@ namespace EconomicsGame.Systems {
 				ref var entity = ref _filter.GetEntity(characterIdx);
 				entity.Get<DeadCharacterFlag>();
 				entity.Get<CharacterDeathEvent>();
-				Debug.Log($"Character {character.Name} died");
+				Debug.Log($"Character {character.Log()} died");
 			}
 		}
 	}

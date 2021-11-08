@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace EconomicsGame.Services {
 	public sealed class IdFactory {
@@ -10,6 +11,7 @@ namespace EconomicsGame.Services {
 			_ids.TryGetValue(type, out var accum);
 			accum++;
 			_ids[type] = accum;
+			Debug.Log($"GenerateNewId({type.Name}): {accum}");
 			return accum;
 		}
 

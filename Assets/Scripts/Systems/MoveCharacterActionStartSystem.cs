@@ -28,7 +28,7 @@ namespace EconomicsGame.Systems {
 				actionProgress.Speed = 1;
 				currentLocation.Characters.Remove(character.Id);
 				characterEntity.Get<BusyCharacterFlag>();
-				Debug.Log($"Character {character.Name} started to move to location {targetLocation.Name}");
+				Debug.Log($"Character {character.Log()} started to move to {targetLocation.Log()}");
 			}
 		}
 	}

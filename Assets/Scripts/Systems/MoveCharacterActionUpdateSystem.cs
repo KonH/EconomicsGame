@@ -26,7 +26,7 @@ namespace EconomicsGame.Systems {
 				characterEntity.Del<BusyCharacterFlag>();
 				ref var location = ref locationService.GetEntity(character.CurrentLocation).Get<Location>();
 				location.Characters.Add(character.Id);
-				Debug.Log($"Character {character.Name} moved to location {location.Name}");
+				Debug.Log($"Character {character.Log()} moved to {location.Log()}");
 			}
 		}
 	}

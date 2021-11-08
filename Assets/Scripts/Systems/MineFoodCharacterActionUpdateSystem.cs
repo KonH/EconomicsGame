@@ -52,7 +52,7 @@ namespace EconomicsGame.Systems {
 				source.Remaining--;
 				characterEntity.Del<MineFoodCharacterAction>();
 				characterEntity.Del<BusyCharacterFlag>();
-				Debug.Log($"Character {character.Name} completed mining food");
+				Debug.Log($"Character {character.Log()} completed mining food at {locationEntity.Get<Location>().Log()}");
 			}
 		}
 	}

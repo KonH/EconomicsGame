@@ -1,6 +1,7 @@
 using EconomicsGame.Components;
 using EconomicsGame.Services;
 using Leopotam.Ecs;
+using UnityEngine;
 using UnityEngine.Assertions;
 
 namespace EconomicsGame.Systems {
@@ -20,9 +21,11 @@ namespace EconomicsGame.Systems {
 					ref var trade = ref itemEntity.Get<Trade>();
 					ref var location = ref locationService.GetEntity(trade.Location).Get<Location>();
 					itemService.RemoveTradeFromLocation(item.Id, ref location);
+					Debug.Log($"Item {item.Log()} removed from location {location.Log()} trades");
 				} else {
 					ref var inventory = ref characterEntity.Get<Inventory>();
 					itemService.RemoveFromInventory(item.Id, ref inventory);
+					Debug.Log($"Item {item.Log()} removed from {characterEntity.Get<Character>().Log()} inventory");
 				}
 			}
 		}

@@ -1,6 +1,7 @@
 using EconomicsGame.Components;
 using Leopotam.Ecs;
 using UniRx;
+using UnityEngine;
 
 namespace EconomicsGame.Services {
 	public sealed class CharacterService {
@@ -19,13 +20,15 @@ namespace EconomicsGame.Services {
 		}
 
 		public void AddToLocation(int id, EcsEntity entity, ref Location location) {
+			Debug.Log($"AddToLocation: {entity.Get<Character>().Log()}, {location.Log()}");
 			Add(id, entity);
 			location.Characters.Add(id);
 		}
 
 		public EcsEntity GetEntity(int id) => _entityProvider.GetEntity<Character>(id);
 
-		public void RemoveCharacterFromLocation(int id, ref Location location) {
+		public void RemoveFromLocation(int id, ref Location location) {
+			Debug.Log($"RemoveFromLocation: CH:{id}, {location.Log()}");
 			location.Characters.Remove(id);
 			Remove(id);
 		}

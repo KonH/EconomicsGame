@@ -37,7 +37,7 @@ namespace EconomicsGame.Systems {
 				if ( itemToSell.Count.Value == 0 ) {
 					itemEntity.Get<EmptyItemFlag>();
 				}
-				Debug.Log($"Character {character.Name} sell {tradeItem.Name} x{tradeItem.Count} by {pricePerUnit}/unit");
+				Debug.Log($"Character {character.Log()} sell {tradeItem.Log()} x{tradeItem.Count} by {pricePerUnit}/unit");
 			}
 		}
 	}

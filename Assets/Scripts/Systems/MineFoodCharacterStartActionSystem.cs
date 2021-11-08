@@ -23,7 +23,7 @@ namespace EconomicsGame.Systems {
 				ref var source = ref targetLocationEntity.Get<FoodSource>();
 				source.Locked++;
 				characterEntity.Get<BusyCharacterFlag>();
-				Debug.Log($"Character {characterEntity.Get<Character>().Name} started to mine food");
+				Debug.Log($"Character {characterEntity.Get<Character>().Log()} started to mine food at {targetLocation.Log()}");
 			}
 		}
 	}

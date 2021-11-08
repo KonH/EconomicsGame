@@ -14,11 +14,12 @@ namespace EconomicsGame.Services {
 				storage = new Dictionary<int, EcsEntity>();
 				_entities[type] = storage;
 			}
+			Assert.IsFalse(storage.ContainsKey(id));
 			storage[id] = entity;
 		}
 
 		public EcsEntity GetEntity<T>(int id) where T : struct, IIdOwner {
-			Assert.IsTrue(TryGetEntity<T>(id, out var entity));
+			Assert.IsTrue(TryGetEntity<T>(id, out var entity), $"Failed to find entity of type {typeof(T)} with ID {id}");
 			return entity;
 		}
 

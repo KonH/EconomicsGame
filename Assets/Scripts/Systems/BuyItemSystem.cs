@@ -41,7 +41,7 @@ namespace EconomicsGame.Systems {
 					// TODO: handle it in one service
 					itemEntity.Get<EmptyItemFlag>();
 				}
-				Debug.Log($"{buyerCharacterEntity.Get<Character>().Name} bought {boughtItem.Name} x{buyCount} for {totalPrice}");
+				Debug.Log($"{buyerCharacterEntity.Get<Character>().Log()} bought {boughtItem.Log()} x{buyCount} for {totalPrice}");
 			}
 		}
 

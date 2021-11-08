@@ -13,7 +13,7 @@ namespace EconomicsGame.Systems {
 			foreach ( var characterIdx in _filter ) {
 				ref var character = ref _filter.Get1(characterIdx);
 				ref var location = ref locationService.GetEntity(character.CurrentLocation).Get<Location>();
-				characterService.RemoveCharacterFromLocation(character.Id, ref location);
+				characterService.RemoveFromLocation(character.Id, ref location);
 			}
 		}
 	}
