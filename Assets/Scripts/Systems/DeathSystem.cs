@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace EconomicsGame.Systems {
 	public sealed class DeathSystem : IEcsRunSystem {
-		readonly EcsFilter<Character, CharacterStats> _filter;
+		readonly EcsFilter<Character, CharacterStats>.Exclude<DeadCharacterFlag> _filter;
 
 		public void Run() {
 			foreach ( var characterIdx in _filter ) {
