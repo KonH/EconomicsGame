@@ -4,7 +4,7 @@ using UniRx;
 
 namespace EconomicsGame.Services {
 	public sealed class RuntimeData {
-		public PersistantService PersistantService { get; } = new PersistantService();
+		public PersistantService PersistantService { get; }
 		public IdFactory IdFactory { get; } = new IdFactory();
 		// TODO: use single class provider
 		public ComponentProvider<Item> ItemProvider { get; } = new ComponentProvider<Item>();
@@ -15,5 +15,9 @@ namespace EconomicsGame.Services {
 		public ReactiveCollection<EcsEntity> Characters { get; } = new ReactiveCollection<EcsEntity>();
 		public ReactiveProperty<EcsEntity> SelectedLocation { get; } = new ReactiveProperty<EcsEntity>();
 		public ReactiveProperty<EcsEntity> SelectedCharacter { get; } = new ReactiveProperty<EcsEntity>();
+
+		public RuntimeData(IStore store) {
+			PersistantService = new PersistantService(store);
+		}
 	}
 }

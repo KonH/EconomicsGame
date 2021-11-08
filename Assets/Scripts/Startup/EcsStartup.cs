@@ -13,12 +13,13 @@ namespace EconomicsGame.Startup {
 		public SceneData SceneData => _sceneData;
 		public GlobalData GlobalData => _globalData;
 
-		public RuntimeData RuntimeData { get; } = new RuntimeData();
+		public RuntimeData RuntimeData { get; private set; }
 
 		EcsWorld _world;
 		EcsSystems _systems;
 
 		void Awake() {
+			RuntimeData = new RuntimeData(new PersistentDataFileStore());
 			foreach ( var initializer in _sceneData.Initializers ) {
 				initializer.Attach(this);
 			}

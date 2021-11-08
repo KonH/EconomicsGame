@@ -1,35 +1,27 @@
 using System.Collections.Generic;
-using System.IO;
-using UnityEngine;
-using Newtonsoft.Json;
 
 namespace EconomicsGame.Services {
-	public class PersistantService {
-		public string SaveRoot => Application.persistentDataPath;
-		public string SavePath => Path.Combine(SaveRoot, "save.json");
-		public bool CanLoad => File.Exists(SavePath);
+	public sealed class PersistantService {
+		readonly JsonSerializerWrapper _serializer = new JsonSerializerWrapper();
+		readonly IStore _store;
+
+		public bool CanLoad => _store.CanLoad;
+
+		public PersistantService(IStore store) {
+			_store = store;
+		}
 
 		public void Save(List<List<object>> data) {
-			var json = JsonConvert.SerializeObject(data, CreateSettings());
-			File.WriteAllText(SavePath, json);
+			var json = _serializer.Serialize(data);
+			_store.Save(json);
 		}
 
 		public List<List<object>> Load() {
-			var json = File.ReadAllText(SavePath);
-			var result = JsonConvert.DeserializeObject<List<List<object>>>(json, CreateSettings());
+			var json = _store.Load();
+			var result = _serializer.Deserialize<List<List<object>>>(json);
 			return result;
 		}
 
-		public void Delete() => File.Delete(SavePath);
-
-		JsonSerializerSettings CreateSettings() {
-			var settings = new JsonSerializerSettings {
-				TypeNameHandling = TypeNameHandling.Auto,
-				Formatting = Formatting.Indented
-			};
-			settings.Converters.Add(new Vector2JsonConverter());
-			settings.Converters.Add(new ReactivePropertyConverter());
-			return settings;
-		}
+		public void Delete() => _store.Delete();
 	}
 }
