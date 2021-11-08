@@ -5,7 +5,6 @@ using EconomicsGame.Services;
 using Leopotam.Ecs;
 using UniRx;
 using UnityEngine;
-using UnityEngine.Assertions;
 
 namespace EconomicsGame.UnityComponents {
 	sealed class LocationCharactersView : StartupInitializer {
@@ -62,10 +61,8 @@ namespace EconomicsGame.UnityComponents {
 			}
 		}
 
-		EcsEntity ConvertIdToEntity(int id) {
-			Assert.IsTrue(_runtimeData.CharacterProvider.TryGetEntity(id, out var entity));
-			return entity;
-		}
+		EcsEntity ConvertIdToEntity(int id) =>
+			_runtimeData.CharacterService.GetEntity(id);
 
 		void OnAdd(EcsEntity entity) {
 			ref var character = ref entity.Get<Character>();

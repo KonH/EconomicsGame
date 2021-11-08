@@ -9,11 +9,12 @@ namespace EconomicsGame.Systems {
 		readonly EcsFilter<Item, FoodItem, UseItemEvent> _itemFilter;
 
 		public void Run() {
-			var characterProvider = _runtimeData.CharacterProvider;
+			var characterService = _runtimeData.CharacterService;
 			foreach ( var itemIdx in _itemFilter ) {
 				ref var item = ref _itemFilter.Get1(itemIdx);
 				ref var foodItem = ref _itemFilter.Get2(itemIdx);
-				if ( !characterProvider.TryGetEntity(item.Owner, out var characterEntity) || !characterEntity.Has<CharacterStats>() ) {
+				var characterEntity = characterService.GetEntity(item.Owner);
+				if ( !characterEntity.Has<CharacterStats>() ) {
 					continue;
 				}
 				ref var stats = ref characterEntity.Get<CharacterStats>();

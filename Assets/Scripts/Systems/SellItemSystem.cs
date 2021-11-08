@@ -3,7 +3,6 @@ using EconomicsGame.Services;
 using Leopotam.Ecs;
 using UniRx;
 using UnityEngine;
-using UnityEngine.Assertions;
 
 namespace EconomicsGame.Systems {
 	public class SellItemSystem : IEcsRunSystem {
@@ -13,9 +12,9 @@ namespace EconomicsGame.Systems {
 
 		public void Run() {
 			var idFactory = _runtimeData.IdFactory;
-			var itemProvider = _runtimeData.ItemProvider;
-			var characterProvider = _runtimeData.CharacterProvider;
-			var locationProvider = _runtimeData.LocationProvider;
+			var characterService = _runtimeData.CharacterService;
+			var itemService = _runtimeData.ItemService;
+			var locationService = _runtimeData.LocationService;
 			foreach ( var itemIdx in _filter ) {
 				ref var itemEntity = ref _filter.GetEntity(itemIdx);
 				ref var itemToSell = ref _filter.Get1(itemIdx);
@@ -29,11 +28,11 @@ namespace EconomicsGame.Systems {
 				tradeItem.Id = idFactory.GenerateNewId<Item>();
 				tradeItem.Count = new ReactiveProperty<long>(sellCount);
 				ref var trade = ref tradeEntity.Get<Trade>();
-				Assert.IsTrue(characterProvider.TryGetComponent(itemToSell.Owner, out var character));
+				ref var character = ref characterService.GetEntity(itemToSell.Owner).Get<Character>();
 				trade.Location = character.CurrentLocation;
 				trade.PricePerUnit = pricePerUnit;
-				itemProvider.Assign(tradeItem.Id, tradeEntity);
-				Assert.IsTrue(locationProvider.TryGetComponent(character.CurrentLocation, out var location));
+				itemService.Add(tradeItem.Id, tradeEntity);
+				ref var location = ref locationService.GetEntity(character.CurrentLocation).Get<Location>();
 				location.Trades.Add(tradeItem.Id);
 				if ( itemToSell.Count.Value == 0 ) {
 					itemEntity.Get<EmptyItemFlag>();

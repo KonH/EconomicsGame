@@ -12,7 +12,7 @@ namespace EconomicsGame.Startup {
 		public override void Attach(IEcsStartup startup) {
 			_disposable = new CompositeDisposable();
 			_prefab = startup.GlobalData.LocationWorldViewPrefab;
-			var locations = startup.RuntimeData.Locations;
+			var locations = startup.RuntimeData.LocationService.Locations;
 			locations
 				.ObserveAdd()
 				.Subscribe(e => OnAdd(e.Value))

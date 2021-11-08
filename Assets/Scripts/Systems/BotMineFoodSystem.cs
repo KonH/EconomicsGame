@@ -1,7 +1,6 @@
 using EconomicsGame.Components;
 using EconomicsGame.Services;
 using Leopotam.Ecs;
-using UnityEngine.Assertions;
 
 namespace EconomicsGame.Systems {
 	public sealed class BotMineFoodSystem : IEcsRunSystem {
@@ -9,10 +8,10 @@ namespace EconomicsGame.Systems {
 		readonly EcsFilter<Character, BotCharacterFlag, Inventory>.Exclude<DeadCharacterFlag, BusyCharacterFlag> _filter;
 
 		public void Run() {
-			var locationProvider = _runtimeData.LocationProvider;
+			var locationService = _runtimeData.LocationService;
 			foreach ( var characterIdx in _filter ) {
 				ref var character = ref _filter.Get1(characterIdx);
-				Assert.IsTrue(locationProvider.TryGetEntity(character.CurrentLocation, out var currentLocationEntity));
+				var currentLocationEntity = locationService.GetEntity(character.CurrentLocation);
 				if ( !currentLocationEntity.Has<FoodSource>() ) {
 					continue;
 				}

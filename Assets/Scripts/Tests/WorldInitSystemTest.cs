@@ -38,9 +38,9 @@ namespace EconomicsGame.Tests {
 			EcsEntity[] entities = null;
 			world.GetAllEntities(ref entities);
 			entities.Should().Contain(e => IsValidLocation(e));
-			runtimeData.LocationProvider.TryGetEntity(1, out _).Should().BeTrue();
+			runtimeData.LocationService.Locations.Should().NotBeEmpty();
+			runtimeData.LocationService.GetEntity(1).IsAlive().Should().BeTrue();
 			runtimeData.IdFactory.GenerateNewId<Location>().Should().Be(2);
-			runtimeData.Locations.Should().NotBeEmpty();
 		}
 
 		bool IsValidLocation(EcsEntity e) =>
@@ -56,9 +56,9 @@ namespace EconomicsGame.Tests {
 			EcsEntity[] entities = null;
 			world.GetAllEntities(ref entities);
 			entities.Should().Contain(e => IsValidCharacter(e));
-			runtimeData.CharacterProvider.TryGetEntity(1, out _).Should().BeTrue();
+			runtimeData.CharacterService.Characters.Should().NotBeEmpty();
+			runtimeData.CharacterService.GetEntity(1).IsAlive().Should().BeTrue();
 			runtimeData.IdFactory.GenerateNewId<Character>().Should().Be(2);
-			runtimeData.Characters.Should().NotBeEmpty();
 		}
 
 		bool IsValidCharacter(EcsEntity e) =>
@@ -74,7 +74,7 @@ namespace EconomicsGame.Tests {
 			EcsEntity[] entities = null;
 			world.GetAllEntities(ref entities);
 			entities.Should().Contain(e => IsValidItem(e));
-			runtimeData.ItemProvider.TryGetEntity(1, out _).Should().BeTrue();
+			runtimeData.ItemService.GetEntity(1).IsAlive().Should().BeTrue();
 			runtimeData.IdFactory.GenerateNewId<Item>().Should().Be(2);
 		}
 

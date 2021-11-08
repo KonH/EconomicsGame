@@ -3,7 +3,6 @@ using EconomicsGame.Services;
 using Leopotam.Ecs;
 using UniRx;
 using UnityEngine;
-using UnityEngine.Assertions;
 
 namespace EconomicsGame.Systems {
 	public sealed class MineFoodCharacterActionUpdateSystem : IEcsRunSystem {
@@ -12,9 +11,9 @@ namespace EconomicsGame.Systems {
 		readonly EcsFilter<Character, MineFoodCharacterAction, CharacterActionProgress, Inventory>.Exclude<DeadCharacterFlag> _filter;
 
 		void IEcsRunSystem.Run() {
-			var itemProvider = _runtimeData.ItemProvider;
 			var idFactory = _runtimeData.IdFactory;
-			var locationProvider = _runtimeData.LocationProvider;
+			var itemService = _runtimeData.ItemService;
+			var locationService = _runtimeData.LocationService;
 			foreach ( var characterIdx in _filter ) {
 				ref var characterEntity = ref _filter.GetEntity(characterIdx);
 				ref var mineFoodAction = ref _filter.Get2(characterIdx);
@@ -26,7 +25,7 @@ namespace EconomicsGame.Systems {
 				ref var inventory = ref _filter.Get4(characterIdx);
 				var shouldAddItem = true;
 				foreach ( var itemId in inventory.Items ) {
-					Assert.IsTrue(itemProvider.TryGetComponent(itemId, out var item));
+					ref var item = ref itemService.GetEntity(itemId).Get<Item>();
 					if ( item.Name != "Food" ) {
 						continue;
 					}
@@ -45,10 +44,9 @@ namespace EconomicsGame.Systems {
 					item.Count = new ReactiveProperty<long>(1);
 					ref var foodItem = ref itemEntity.Get<FoodItem>();
 					foodItem.Restore = 1;
-					itemProvider.Assign(newItemId, itemEntity);
-					inventory.Items.Add(newItemId);
+					itemService.AddToInventory(newItemId, itemEntity, ref inventory);
 				}
-				Assert.IsTrue(locationProvider.TryGetEntity(mineFoodAction.TargetLocation, out var locationEntity));
+				var locationEntity = locationService.GetEntity(mineFoodAction.TargetLocation);
 				ref var source = ref locationEntity.Get<FoodSource>();
 				source.Locked--;
 				source.Remaining--;

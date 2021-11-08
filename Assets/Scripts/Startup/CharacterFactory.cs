@@ -15,7 +15,7 @@ namespace EconomicsGame.Startup {
 		public override void Attach(IEcsStartup startup) {
 			_disposable = new CompositeDisposable();
 			_prefab = startup.GlobalData.CharacterWorldViewPrefab;
-			var characters = startup.RuntimeData.Characters;
+			var characters = startup.RuntimeData.CharacterService.Characters;
 			characters
 				.ObserveAdd()
 				.Subscribe(e => OnAdd(e.Value))

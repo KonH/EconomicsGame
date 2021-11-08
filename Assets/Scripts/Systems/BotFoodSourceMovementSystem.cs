@@ -3,7 +3,6 @@ using EconomicsGame.Components;
 using EconomicsGame.Services;
 using Leopotam.Ecs;
 using UnityEngine;
-using UnityEngine.Assertions;
 
 namespace EconomicsGame.Systems {
 	public sealed class BotFoodSourceMovementSystem : IEcsRunSystem {
@@ -11,8 +10,8 @@ namespace EconomicsGame.Systems {
 		readonly EcsFilter<Character, BotCharacterFlag, CharacterStats, Inventory>.Exclude<DeadCharacterFlag, BusyCharacterFlag> _filter;
 
 		public void Run() {
-			var itemProvider = _runtimeData.ItemProvider;
-			var locationProvider = _runtimeData.LocationProvider;
+			var itemService = _runtimeData.ItemService;
+			var locationService = _runtimeData.LocationService;
 			foreach ( var characterIdx in _filter ) {
 				ref var stats = ref _filter.Get3(characterIdx);
 				var shouldMoveToFoodSource = true;
@@ -21,7 +20,7 @@ namespace EconomicsGame.Systems {
 				} else if ( !stats.Values.ContainsKey("Brave") ) {
 					ref var inventory = ref _filter.Get4(characterIdx);
 					foreach ( var itemId in inventory.Items ) {
-						Assert.IsTrue(itemProvider.TryGetEntity(itemId, out var itemEntity));
+						var itemEntity = itemService.GetEntity(itemId);
 						ref var item = ref itemEntity.Get<Item>();
 						if ( item.Name != "Food" ) {
 							continue;
@@ -34,7 +33,7 @@ namespace EconomicsGame.Systems {
 					continue;
 				}
 				ref var character = ref _filter.Get1(characterIdx);
-				Assert.IsTrue(locationProvider.TryGetEntity(character.CurrentLocation, out var currentLocationEntity));
+				var currentLocationEntity = locationService.GetEntity(character.CurrentLocation);
 				if ( currentLocationEntity.Has<FoodSource>() ) {
 					ref var currentFoodSource = ref currentLocationEntity.Get<FoodSource>();
 					var isEnoughFood = (currentFoodSource.Remaining > 0) && (currentFoodSource.Locked < currentFoodSource.Remaining);
@@ -43,7 +42,7 @@ namespace EconomicsGame.Systems {
 					}
 				}
 				var possibleFoodSourceLocations = new List<int>();
-				foreach ( var locationEntity in _runtimeData.Locations ) {
+				foreach ( var locationEntity in locationService.Locations ) {
 					ref var location = ref locationEntity.Get<Location>();
 					if ( location.Id == character.CurrentLocation ) {
 						continue;

@@ -3,7 +3,6 @@ using EconomicsGame.Services;
 using Leopotam.Ecs;
 using UniRx;
 using UnityEngine;
-using UnityEngine.Assertions;
 
 namespace EconomicsGame.Systems {
 	// TODO: safety from double buy issue
@@ -15,8 +14,8 @@ namespace EconomicsGame.Systems {
 		public void Run() {
 			// TODO: handle deps in all systems properly?
 			var idFactory = _runtimeData.IdFactory;
-			var characterProvider = _runtimeData.CharacterProvider;
-			var itemProvider = _runtimeData.ItemProvider;
+			var characterService = _runtimeData.CharacterService;
+			var itemService = _runtimeData.ItemService;
 			foreach ( var itemIdx in _filter ) {
 				ref var itemEntity = ref _filter.GetEntity(itemIdx);
 				ref var itemToBuy = ref _filter.Get1(itemIdx);
@@ -24,8 +23,8 @@ namespace EconomicsGame.Systems {
 				ref var buyEvent = ref _filter.Get3(itemIdx);
 				var buyCount = buyEvent.Count;
 				var totalPrice = trade.PricePerUnit * buyCount;
-				Assert.IsTrue(characterProvider.TryGetEntity(buyEvent.Buyer, out var buyerCharacterEntity));
-				if ( !TryChangeCash(idFactory, itemProvider, ref buyerCharacterEntity, -totalPrice) ) {
+				var buyerCharacterEntity = characterService.GetEntity(buyEvent.Buyer);
+				if ( !TryChangeCash(idFactory, itemService, ref buyerCharacterEntity, -totalPrice) ) {
 					continue;
 				}
 				itemToBuy.Count.Value -= buyCount;
@@ -35,11 +34,9 @@ namespace EconomicsGame.Systems {
 				ref var boughtItem = ref boughtItemEntity.Get<Item>();
 				boughtItem.Id = idFactory.GenerateNewId<Item>();
 				boughtItem.Count = new ReactiveProperty<long>(buyCount);
-				Assert.IsTrue(characterProvider.TryGetEntity(itemToBuy.Owner, out var sellerCharacter));
-				TryChangeCash(idFactory, itemProvider, ref sellerCharacter, totalPrice);
-				itemProvider.Assign(boughtItem.Id, boughtItemEntity);
-				ref var buyerInventory = ref buyerCharacterEntity.Get<Inventory>();
-				buyerInventory.Items.Add(boughtItem.Id);
+				var sellerCharacter = characterService.GetEntity(itemToBuy.Owner);
+				TryChangeCash(idFactory, itemService, ref sellerCharacter, totalPrice);
+				itemService.AddToInventory(boughtItem.Id, boughtItemEntity, ref buyerCharacterEntity.Get<Inventory>());
 				if ( itemToBuy.Count.Value == 0 ) {
 					// TODO: handle it in one service
 					itemEntity.Get<EmptyItemFlag>();
@@ -48,10 +45,10 @@ namespace EconomicsGame.Systems {
 			}
 		}
 
-		bool TryChangeCash(IdFactory idFactory, ComponentProvider<Item> itemProvider, ref EcsEntity characterEntity, long addValue) {
+		bool TryChangeCash(IdFactory idFactory, ItemService itemService, ref EcsEntity characterEntity, long addValue) {
 			ref var inventory = ref characterEntity.Get<Inventory>();
 			foreach ( var itemId in inventory.Items ) {
-				Assert.IsTrue(itemProvider.TryGetEntity(itemId, out var itemEntity));
+				var itemEntity = itemService.GetEntity(itemId);
 				ref var item = ref itemEntity.Get<Item>();
 				if ( item.Name != "Cash" ) {
 					continue;
@@ -80,8 +77,7 @@ namespace EconomicsGame.Systems {
 			newItem.Owner = character.Id;
 			newItem.Name = "Cash";
 			newItem.Count = new ReactiveProperty<long>(addValue);
-			itemProvider.Assign(newItem.Id, newItemEntity);
-			inventory.Items.Add(newItem.Id);
+			itemService.AddToInventory(newItem.Id, newItemEntity, ref inventory);
 			return true;
 		}
 	}

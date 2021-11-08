@@ -2,7 +2,6 @@ using EconomicsGame.Components;
 using EconomicsGame.Services;
 using Leopotam.Ecs;
 using UnityEngine;
-using UnityEngine.Assertions;
 
 namespace EconomicsGame.Systems {
 	public sealed class MoveCharacterActionStartSystem : IEcsRunSystem {
@@ -10,7 +9,7 @@ namespace EconomicsGame.Systems {
 		readonly EcsFilter<Character, MoveCharacterActionEvent>.Exclude<BusyCharacterFlag, DeadCharacterFlag> _filter;
 
 		void IEcsRunSystem.Run() {
-			var locationProvider = _runtimeData.LocationProvider;
+			var locationService = _runtimeData.LocationService;
 			foreach ( var characterIdx in _filter ) {
 				ref var moveActionEvent = ref _filter.Get2(characterIdx);
 				ref var character = ref _filter.Get1(characterIdx);
@@ -20,8 +19,8 @@ namespace EconomicsGame.Systems {
 				ref var characterEntity = ref _filter.GetEntity(characterIdx);
 				ref var moveAction = ref characterEntity.Get<MoveCharacterAction>();
 				moveAction.SourcePosition = character.Position.Value;
-				Assert.IsTrue(locationProvider.TryGetComponent(character.CurrentLocation, out var currentLocation));
-				Assert.IsTrue(locationProvider.TryGetComponent(moveActionEvent.TargetLocation, out var targetLocation));
+				ref var currentLocation = ref locationService.GetEntity(character.CurrentLocation).Get<Location>();
+				ref var targetLocation = ref locationService.GetEntity(moveActionEvent.TargetLocation).Get<Location>();
 				moveAction.TargetPosition = targetLocation.Position;
 				moveAction.TargetLocation = targetLocation.Id;
 				ref var actionProgress = ref characterEntity.Get<CharacterActionProgress>();

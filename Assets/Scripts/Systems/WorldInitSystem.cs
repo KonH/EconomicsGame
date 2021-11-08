@@ -24,9 +24,6 @@ namespace EconomicsGame.Systems {
 		// TODO: to custom system/service
 		void Generate() {
 			var idFactory = _runtimeData.IdFactory;
-			var locationProvider = _runtimeData.LocationProvider;
-			var characterProvider = _runtimeData.CharacterProvider;
-			var itemProvider = _runtimeData.ItemProvider;
 			var first = true;
 			foreach ( var locationSetup in _locations ) {
 				var locationEntity = _world.NewEntity();
@@ -41,8 +38,7 @@ namespace EconomicsGame.Systems {
 					ref var source = ref locationEntity.Get<FoodSource>();
 					source.Remaining = 10;
 				}
-				locationProvider.Assign(location.Id, locationEntity);
-				_runtimeData.Locations.Add(locationEntity);
+				_runtimeData.LocationService.Add(location.Id, locationEntity);
 
 				if ( !first ) {
 					continue;
@@ -72,8 +68,7 @@ namespace EconomicsGame.Systems {
 						item.Count = new ReactiveProperty<long>(1);
 						ref var foodItem = ref itemEntity.Get<FoodItem>();
 						foodItem.Restore = 1;
-						itemProvider.Assign(item.Id, itemEntity);
-						inventory.Items.Add(item.Id);
+						_runtimeData.ItemService.AddToInventory(item.Id, itemEntity, ref inventory);
 					}
 					{
 						var itemEntity = _world.NewEntity();
@@ -82,8 +77,7 @@ namespace EconomicsGame.Systems {
 						item.Owner = character.Id;
 						item.Name = "Cash";
 						item.Count = new ReactiveProperty<long>(100);
-						itemProvider.Assign(item.Id, itemEntity);
-						inventory.Items.Add(item.Id);
+						_runtimeData.ItemService.AddToInventory(item.Id, itemEntity, ref inventory);
 					}
 
 					ref var stats = ref characterEntity.Get<CharacterStats>();
@@ -97,9 +91,7 @@ namespace EconomicsGame.Systems {
 						stats.Values.Add("Coward", new ReactiveProperty<float>(0));
 					}
 
-					characterProvider.Assign(character.Id, characterEntity);
-					location.Characters.Add(character.Id);
-					_runtimeData.Characters.Add(characterEntity);
+					_runtimeData.CharacterService.AddToLocation(character.Id, characterEntity, ref location);
 				}
 			}
 		}

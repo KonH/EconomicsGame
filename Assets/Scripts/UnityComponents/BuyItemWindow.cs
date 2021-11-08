@@ -4,7 +4,6 @@ using Leopotam.Ecs;
 using TMPro;
 using UniRx;
 using UnityEngine;
-using UnityEngine.Assertions;
 using UnityEngine.UI;
 
 namespace EconomicsGame.UnityComponents {
@@ -92,7 +91,7 @@ namespace EconomicsGame.UnityComponents {
 			// TODO: extract to service
 			ref var inventory = ref _characterEntity.Get<Inventory>();
 			foreach ( var itemId in inventory.Items ) {
-				Assert.IsTrue(_runtimeData.ItemProvider.TryGetComponent(itemId, out var item));
+				ref var item = ref _runtimeData.ItemService.GetEntity(itemId).Get<Item>();
 				if ( item.Name == "Cash" ) { // TODO: rework condition
 					return item.Count.Value >= totalPrice;
 				}

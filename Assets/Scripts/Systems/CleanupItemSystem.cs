@@ -9,22 +9,21 @@ namespace EconomicsGame.Systems {
 		readonly EcsFilter<Item, EmptyItemFlag> _itemFilter;
 
 		public void Run() {
-			var itemProvider = _runtimeData.ItemProvider;
-			var characterProvider = _runtimeData.CharacterProvider;
-			var locationProvider = _runtimeData.LocationProvider;
+			var characterService = _runtimeData.CharacterService;
+			var locationService = _runtimeData.LocationService;
+			var itemService = _runtimeData.ItemService;
 			foreach ( var itemIdx in _itemFilter ) {
 				ref var itemEntity = ref _itemFilter.GetEntity(itemIdx);
 				ref var item = ref _itemFilter.Get1(itemIdx);
-				Assert.IsTrue(characterProvider.TryGetEntity(item.Owner, out var characterEntity));
+				var characterEntity = characterService.GetEntity(item.Owner);
 				if ( itemEntity.Has<Trade>() ) {
 					ref var trade = ref itemEntity.Get<Trade>();
-					Assert.IsTrue(locationProvider.TryGetComponent(trade.Location, out var location));
-					location.Trades.Remove(item.Id);
+					ref var location = ref locationService.GetEntity(trade.Location).Get<Location>();
+					itemService.RemoveTradeFromLocation(item.Id, ref location);
 				} else {
 					ref var inventory = ref characterEntity.Get<Inventory>();
-					inventory.Items.Remove(item.Id);
+					itemService.RemoveFromInventory(item.Id, ref inventory);
 				}
-				itemProvider.Remove(item.Id);
 			}
 		}
 	}

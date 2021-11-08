@@ -2,7 +2,6 @@ using EconomicsGame.Components;
 using EconomicsGame.Services;
 using Leopotam.Ecs;
 using UnityEngine;
-using UnityEngine.Assertions;
 
 namespace EconomicsGame.Systems {
 	public sealed class MoveCharacterActionUpdateSystem : IEcsRunSystem {
@@ -10,7 +9,7 @@ namespace EconomicsGame.Systems {
 		readonly EcsFilter<Character, MoveCharacterAction, CharacterActionProgress>.Exclude<DeadCharacterFlag> _filter;
 
 		void IEcsRunSystem.Run() {
-			var locationProvider = _runtimeData.LocationProvider;
+			var locationService = _runtimeData.LocationService;
 			foreach ( var characterIdx in _filter ) {
 				ref var characterEntity = ref _filter.GetEntity(characterIdx);
 				ref var character = ref _filter.Get1(characterIdx);
@@ -25,7 +24,7 @@ namespace EconomicsGame.Systems {
 				character.CurrentLocation = moveAction.TargetLocation;
 				characterEntity.Del<MoveCharacterAction>();
 				characterEntity.Del<BusyCharacterFlag>();
-				Assert.IsTrue(locationProvider.TryGetComponent(character.CurrentLocation, out var location));
+				ref var location = ref locationService.GetEntity(character.CurrentLocation).Get<Location>();
 				location.Characters.Add(character.Id);
 				Debug.Log($"Character {character.Name} moved to location {location.Name}");
 			}

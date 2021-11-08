@@ -1,7 +1,6 @@
 using EconomicsGame.Components;
 using EconomicsGame.Services;
 using Leopotam.Ecs;
-using UnityEngine.Assertions;
 
 namespace EconomicsGame.Systems {
 	public sealed class BotUseFoodSystem : IEcsRunSystem {
@@ -9,7 +8,7 @@ namespace EconomicsGame.Systems {
 		readonly EcsFilter<Character, BotCharacterFlag, CharacterStats, Inventory>.Exclude<DeadCharacterFlag, BusyCharacterFlag> _filter;
 
 		public void Run() {
-			var itemProvider = _runtimeData.ItemProvider;
+			var itemService = _runtimeData.ItemService;
 			foreach ( var characterIdx in _filter ) {
 				ref var stats = ref _filter.Get3(characterIdx);
 				if ( !stats.Values.TryGetValue("Hunger", out var hunger) ) {
@@ -21,7 +20,7 @@ namespace EconomicsGame.Systems {
 				}
 				ref var inventory = ref _filter.Get4(characterIdx);
 				foreach ( var itemId in inventory.Items ) {
-					Assert.IsTrue(itemProvider.TryGetEntity(itemId, out var itemEntity));
+					var itemEntity = itemService.GetEntity(itemId);
 					ref var item = ref itemEntity.Get<Item>();
 					if ( item.Name != "Food" ) {
 						continue;
