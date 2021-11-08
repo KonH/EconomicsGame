@@ -16,11 +16,18 @@ namespace EconomicsGame.Services {
 		}
 
 		public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer) {
-			var targetType = objectType.GetGenericArguments()[0];
+			var targetType = CreateNullableTargetType(objectType.GetGenericArguments()[0]);
 			var targetValue = serializer.Deserialize(reader, targetType);
 			var instance = Activator.CreateInstance(objectType);
 			objectType.GetProperty("Value")?.SetValue(instance, targetValue);
 			return instance;
+		}
+
+		Type CreateNullableTargetType(Type targetType) {
+			if ( targetType.IsValueType ) {
+				return typeof(Nullable<>).MakeGenericType(targetType);
+			}
+			return targetType;
 		}
 	}
 }
