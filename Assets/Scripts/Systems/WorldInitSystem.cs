@@ -65,7 +65,7 @@ namespace EconomicsGame.Systems {
 						item.Id = idFactory.GenerateNewId<Item>();
 						item.Owner = character.Id;
 						item.Name = "Food";
-						item.Count = new ReactiveProperty<long>(1);
+						item.Count = new ReactiveProperty<double>(1);
 						ref var foodItem = ref itemEntity.Get<FoodItem>();
 						foodItem.Restore = 1;
 						_runtimeData.ItemService.AddToInventory(item.Id, itemEntity, ref inventory);
@@ -76,7 +76,7 @@ namespace EconomicsGame.Systems {
 						item.Id = idFactory.GenerateNewId<Item>();
 						item.Owner = character.Id;
 						item.Name = "Cash";
-						item.Count = new ReactiveProperty<long>(100);
+						item.Count = new ReactiveProperty<double>(100);
 						_runtimeData.ItemService.AddToInventory(item.Id, itemEntity, ref inventory);
 					}
 

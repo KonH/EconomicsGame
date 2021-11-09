@@ -25,7 +25,7 @@ namespace EconomicsGame.Tests {
 			var sellerMoneyItemEntity = world.NewEntity();
 			ref var sellerMoneyItem = ref sellerMoneyItemEntity.Get<Item>();
 			sellerMoneyItem.Name = "Cash";
-			sellerMoneyItem.Count = new ReactiveProperty<long>(1);
+			sellerMoneyItem.Count = new ReactiveProperty<double>(1);
 			sellerMoneyItem.Id = runtimeData.IdFactory.GenerateNewId<Item>();
 			runtimeData.ItemService.AddToInventory(sellerMoneyItem.Id, sellerMoneyItemEntity, ref sellerInventory);
 			var buyerCharacterEntity = world.NewEntity();
@@ -37,14 +37,14 @@ namespace EconomicsGame.Tests {
 			var buyerMoneyItemEntity = world.NewEntity();
 			ref var buyerMoneyItem = ref buyerMoneyItemEntity.Get<Item>();
 			buyerMoneyItem.Name = "Cash";
-			buyerMoneyItem.Count = new ReactiveProperty<long>(1);
+			buyerMoneyItem.Count = new ReactiveProperty<double>(1);
 			buyerMoneyItem.Id = runtimeData.IdFactory.GenerateNewId<Item>();
 			runtimeData.ItemService.AddToInventory(buyerMoneyItem.Id, buyerMoneyItemEntity, ref buyerInventory);
 			var tradeItemEntity = world.NewEntity();
 			ref var tradeItem = ref tradeItemEntity.Get<Item>();
 			tradeItem.Owner = sellerCharacter.Id;
 			tradeItem.Id = runtimeData.IdFactory.GenerateNewId<Item>();
-			tradeItem.Count = new ReactiveProperty<long>(1);
+			tradeItem.Count = new ReactiveProperty<double>(1);
 			ref var trade = ref tradeItemEntity.Get<Trade>();
 			trade.PricePerUnit = 1;
 			ref var buyEvent = ref tradeItemEntity.Get<BuyItemEvent>();

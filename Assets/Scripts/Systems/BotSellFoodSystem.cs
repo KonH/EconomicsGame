@@ -17,7 +17,7 @@ namespace EconomicsGame.Systems {
 					continue;
 				}
 				var shouldSellFood = false;
-				var totalFoodCount = 0L;
+				var totalFoodCount = 0.0;
 				var lastFoodEntity = default(EcsEntity);
 				ref var inventory = ref _filter.Get3(characterIdx);
 				foreach ( var itemId in inventory.Items ) {

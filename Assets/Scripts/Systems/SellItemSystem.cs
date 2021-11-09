@@ -26,7 +26,7 @@ namespace EconomicsGame.Systems {
 				var tradeEntity = itemEntity.Copy();
 				ref var tradeItem = ref tradeEntity.Get<Item>();
 				tradeItem.Id = idFactory.GenerateNewId<Item>();
-				tradeItem.Count = new ReactiveProperty<long>(sellCount);
+				tradeItem.Count = new ReactiveProperty<double>(sellCount);
 				ref var trade = ref tradeEntity.Get<Trade>();
 				ref var character = ref characterService.GetEntity(itemToSell.Owner).Get<Character>();
 				trade.Location = character.CurrentLocation;

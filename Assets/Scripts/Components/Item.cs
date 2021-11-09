@@ -5,6 +5,6 @@ namespace EconomicsGame.Components {
 		public int Id { get; set; }
 		public int Owner;
 		public string Name;
-		public ReactiveProperty<long> Count;
+		public ReactiveProperty<double> Count;
 	}
 }

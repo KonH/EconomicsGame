@@ -35,7 +35,7 @@ namespace EconomicsGame.Systems {
 				ref var boughtItem = ref boughtItemEntity.Get<Item>();
 				boughtItem.Id = idFactory.GenerateNewId<Item>();
 				boughtItem.Owner = buyer;
-				boughtItem.Count = new ReactiveProperty<long>(buyCount);
+				boughtItem.Count = new ReactiveProperty<double>(buyCount);
 				var sellerCharacter = characterService.GetEntity(itemToBuy.Owner);
 				TryChangeCash(idFactory, itemService, ref sellerCharacter, totalPrice);
 				itemService.AddToInventory(boughtItem.Id, boughtItemEntity, ref buyerCharacterEntity.Get<Inventory>());
@@ -78,7 +78,7 @@ namespace EconomicsGame.Systems {
 			ref var character = ref characterEntity.Get<Character>();
 			newItem.Owner = character.Id;
 			newItem.Name = "Cash";
-			newItem.Count = new ReactiveProperty<long>(addValue);
+			newItem.Count = new ReactiveProperty<double>(addValue);
 			itemService.AddToInventory(newItem.Id, newItemEntity, ref inventory);
 			return true;
 		}

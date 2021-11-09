@@ -43,8 +43,8 @@ namespace EconomicsGame.UnityComponents {
 			_buyButton.onClick.AddListener(OnBuyClick);
 		}
 
-		void UpdateState(long count) {
-			_text.text = $"{_name} x{count} (${_price}/unit)";
+		void UpdateState(double count) {
+			_text.text = $"{_name} x{count:F} (${_price}/unit)";
 		}
 
 		void OnDestroy() => _disposable?.Dispose();

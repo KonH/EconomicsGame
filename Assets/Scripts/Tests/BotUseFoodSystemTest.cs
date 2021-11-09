@@ -33,7 +33,7 @@ namespace EconomicsGame.Tests {
 			item.Id = 1;
 			item.Owner = character.Id;
 			item.Name = "Food";
-			item.Count = new ReactiveProperty<long>(1);
+			item.Count = new ReactiveProperty<double>(1);
 			itemEntity.Get<FoodItem>();
 			runtimeData.ItemService.AddToInventory(item.Id, itemEntity, ref inventory);
 

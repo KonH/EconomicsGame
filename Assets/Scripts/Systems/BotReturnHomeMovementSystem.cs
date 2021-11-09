@@ -14,7 +14,7 @@ namespace EconomicsGame.Systems {
 			var locationService = _runtimeData.LocationService;
 			foreach ( var characterIdx in _filter ) {
 				var shouldMoveToHome = false;
-				var totalFoodCount = 0L;
+				var totalFoodCount = 0.0;
 				ref var inventory = ref _filter.Get3(characterIdx);
 				foreach ( var itemId in inventory.Items ) {
 					var itemEntity = itemService.GetEntity(itemId);
