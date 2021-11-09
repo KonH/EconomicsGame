@@ -10,7 +10,7 @@ namespace EconomicsGame.Tests {
 	public sealed class WorldInitSystemTest {
 		[Test]
 		public void IsWorldJustGenerated() {
-			var world = InitWorld(null);
+			var world = InitWorld(new EcsWorld(), null);
 
 			EcsEntity[] entities = null;
 			world.GetAllEntities(ref entities);
@@ -21,7 +21,7 @@ namespace EconomicsGame.Tests {
 		public void IsWorldJustLoaded() {
 			var data = CreateSampleData();
 
-			var world = InitWorld(data);
+			var world = InitWorld(new EcsWorld(), data);
 
 			EcsEntity[] entities = null;
 			world.GetAllEntities(ref entities);
@@ -30,10 +30,11 @@ namespace EconomicsGame.Tests {
 
 		[Test]
 		public void IsLocationLoaded() {
-			var runtimeData = new RuntimeData(new InMemoryStore());
+			var world = new EcsWorld();
+			var runtimeData = new RuntimeData(world, new InMemoryStore());
 			var data = CreateSampleData(location: new Location { Id = 1 });
 
-			var world = InitWorld(runtimeData, data);
+			InitWorld(world, runtimeData, data);
 
 			EcsEntity[] entities = null;
 			world.GetAllEntities(ref entities);
@@ -48,10 +49,11 @@ namespace EconomicsGame.Tests {
 
 		[Test]
 		public void IsCharacterLoaded() {
-			var runtimeData = new RuntimeData(new InMemoryStore());
+			var world = new EcsWorld();
+			var runtimeData = new RuntimeData(world, new InMemoryStore());
 			var data = CreateSampleData(character: new Character { Id = 1 });
 
-			var world = InitWorld(runtimeData, data);
+			InitWorld(world, runtimeData, data);
 
 			EcsEntity[] entities = null;
 			world.GetAllEntities(ref entities);
@@ -66,10 +68,11 @@ namespace EconomicsGame.Tests {
 
 		[Test]
 		public void IsItemLoaded() {
-			var runtimeData = new RuntimeData(new InMemoryStore());
+			var world = new EcsWorld();
+			var runtimeData = new RuntimeData(world, new InMemoryStore());
 			var data = CreateSampleData(item: new Item { Id = 1 });
 
-			var world = InitWorld(runtimeData, data);
+			InitWorld(world, runtimeData, data);
 
 			EcsEntity[] entities = null;
 			world.GetAllEntities(ref entities);
@@ -81,11 +84,10 @@ namespace EconomicsGame.Tests {
 		bool IsValidItem(EcsEntity e) =>
 			e.Has<Item>() && e.Get<Item>().Id == 1;
 
-		EcsWorld InitWorld(RuntimeData runtimeData, List<List<object>> data) {
+		EcsWorld InitWorld(EcsWorld world, RuntimeData runtimeData, List<List<object>> data) {
 			if ( data != null ) {
 				runtimeData.PersistantService.Save(data);
 			}
-			var world = new EcsWorld();
 			var systems = new EcsSystems(world);
 			systems
 				.Inject(runtimeData)
@@ -94,7 +96,8 @@ namespace EconomicsGame.Tests {
 			return world;
 		}
 
-		EcsWorld InitWorld(List<List<object>> data) => InitWorld(new RuntimeData(new InMemoryStore()), data);
+		EcsWorld InitWorld(EcsWorld world, List<List<object>> data) =>
+			InitWorld(world, new RuntimeData(world, new InMemoryStore()), data);
 
 		List<List<object>> CreateSampleData(Location location = default, Character character = default, Item item = default) {
 			var data = new List<List<object>> {

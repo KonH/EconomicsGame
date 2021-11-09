@@ -10,6 +10,7 @@ namespace EconomicsGame.Systems {
 
 		void IEcsRunSystem.Run() {
 			var locationService = _runtimeData.LocationService;
+			var characterService = _runtimeData.CharacterService;
 			foreach ( var characterIdx in _filter ) {
 				ref var characterEntity = ref _filter.GetEntity(characterIdx);
 				ref var character = ref _filter.Get1(characterIdx);
@@ -21,11 +22,10 @@ namespace EconomicsGame.Systems {
 					continue;
 				}
 				character.Position.Value = moveAction.TargetPosition;
-				character.CurrentLocation = moveAction.TargetLocation;
+				ref var location = ref locationService.GetEntity(moveAction.TargetLocation).Get<Location>();
+				characterService.MoveCharacterToLocation(ref character, ref location);
 				characterEntity.Del<MoveCharacterAction>();
 				characterEntity.Del<BusyCharacterFlag>();
-				ref var location = ref locationService.GetEntity(character.CurrentLocation).Get<Location>();
-				location.Characters.Add(character.Id);
 				Debug.Log($"Character {character.Log()} moved to {location.Log()}");
 			}
 		}

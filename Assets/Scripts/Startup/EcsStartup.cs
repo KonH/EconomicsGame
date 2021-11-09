@@ -19,14 +19,14 @@ namespace EconomicsGame.Startup {
 		EcsSystems _systems;
 
 		void Awake() {
-			RuntimeData = new RuntimeData(new PersistentDataFileStore());
+			_world = new EcsWorld();
+			RuntimeData = new RuntimeData(_world, new PersistentDataFileStore());
 			foreach ( var initializer in _sceneData.Initializers ) {
 				initializer.Attach(this);
 			}
 		}
 
 		void Start() {
-			_world = new EcsWorld();
 			_systems = new EcsSystems(_world);
 #if UNITY_EDITOR
 			Leopotam.Ecs.UnityIntegration.EcsWorldObserver.Create(_world);

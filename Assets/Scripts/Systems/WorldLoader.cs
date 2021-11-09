@@ -31,15 +31,15 @@ namespace EconomicsGame.Systems {
 					if ( componentType == typeof(Location) ) {
 						ref var location = ref entity.Get<Location>();
 						_runtimeData.IdFactory.AdvanceTo<Location>(location.Id);
-						_runtimeData.LocationService.Add(location.Id, entity);
+						_runtimeData.LocationService.AddInitializedLocation(location.Id, entity);
 					} else if ( componentType == typeof(Character) ) {
 						ref var character = ref entity.Get<Character>();
 						_runtimeData.IdFactory.AdvanceTo<Character>(character.Id);
-						_runtimeData.CharacterService.Add(character.Id, entity);
+						_runtimeData.CharacterService.AddInitializedCharacter(character.Id, entity);
 					} else if ( componentType == typeof(Item) ) {
 						ref var item = ref entity.Get<Item>();
 						_runtimeData.IdFactory.AdvanceTo<Item>(item.Id);
-						_runtimeData.ItemService.Add(item.Id, entity);
+						_runtimeData.ItemService.AddInitializedItem(item.Id, entity);
 					}
 				}
 			}

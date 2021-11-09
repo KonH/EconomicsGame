@@ -13,7 +13,7 @@ namespace EconomicsGame.UnityComponents {
 		EcsEntity _buyer;
 		EcsEntity _entity;
 		string _name;
-		long _price;
+		double _price;
 		CompositeDisposable _disposable;
 
 		[SerializeField] TMP_Text _text;
@@ -44,7 +44,7 @@ namespace EconomicsGame.UnityComponents {
 		}
 
 		void UpdateState(double count) {
-			_text.text = $"{_name} x{count:F} (${_price}/unit)";
+			_text.text = $"{_name} x{count:F} (${_price:F}/unit)";
 		}
 
 		void OnDestroy() => _disposable?.Dispose();

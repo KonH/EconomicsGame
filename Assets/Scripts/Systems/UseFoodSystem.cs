@@ -23,7 +23,6 @@ namespace EconomicsGame.Systems {
 				}
 				hunger.Value = Mathf.Clamp01(hunger.Value - foodItem.Restore);
 				item.Count.Value -= 1;
-				// TODO: fix assertion failure issue
 				var remainingCount = item.Count.Value;
 				Debug.Log($"Character {characterEntity.Get<Character>().Log()} consumes food item {item.Log()}, {remainingCount} remaining");
 				if ( remainingCount > 0 ) {

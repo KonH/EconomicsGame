@@ -1,7 +1,6 @@
 using EconomicsGame.Components;
 using EconomicsGame.Services;
 using Leopotam.Ecs;
-using UniRx;
 using UnityEngine;
 
 namespace EconomicsGame.Systems {
@@ -23,20 +22,13 @@ namespace EconomicsGame.Systems {
 				var sellCount = sellEvent.Count;
 				itemToSell.Count.Value -= sellCount;
 				itemEntity.Del<SellItemEvent>();
-				var tradeEntity = itemEntity.Copy();
-				ref var tradeItem = ref tradeEntity.Get<Item>();
-				tradeItem.Id = idFactory.GenerateNewId<Item>();
-				tradeItem.Count = new ReactiveProperty<double>(sellCount);
-				ref var trade = ref tradeEntity.Get<Trade>();
 				ref var character = ref characterService.GetEntity(itemToSell.Owner).Get<Character>();
-				trade.Location = character.CurrentLocation;
-				trade.PricePerUnit = pricePerUnit;
-				itemService.Add(tradeItem.Id, tradeEntity);
 				ref var location = ref locationService.GetEntity(character.CurrentLocation).Get<Location>();
-				location.Trades.Add(tradeItem.Id);
+				var tradeEntity = itemService.CreateTradeAtLocation(ref character, ref location, itemEntity, sellCount, pricePerUnit);
 				if ( itemToSell.Count.Value == 0 ) {
 					itemEntity.Get<EmptyItemFlag>();
 				}
+				ref var tradeItem = ref tradeEntity.Get<Item>();
 				Debug.Log($"Character {character.Log()} sell {tradeItem.Log()} x{tradeItem.Count} by {pricePerUnit}/unit");
 			}
 		}

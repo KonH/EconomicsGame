@@ -18,9 +18,9 @@ namespace EconomicsGame.UnityComponents {
 		[SerializeField] Button _sellButton;
 		[SerializeField] Button _cancelButton;
 
-		readonly ReactiveProperty<long> _pricePerUnit = new ReactiveProperty<long>();
-		readonly ReactiveProperty<long> _count = new ReactiveProperty<long>();
-		readonly ReactiveProperty<long> _totalPrice = new ReactiveProperty<long>();
+		readonly ReactiveProperty<double> _pricePerUnit = new ReactiveProperty<double>();
+		readonly ReactiveProperty<double> _count = new ReactiveProperty<double>();
+		readonly ReactiveProperty<double> _totalPrice = new ReactiveProperty<double>();
 
 		CompositeDisposable _disposable;
 		EcsEntity _itemEntity;
@@ -87,11 +87,11 @@ namespace EconomicsGame.UnityComponents {
 		void OnDestroy() => _disposable?.Dispose();
 
 		void OnPricePerUnitChanged(string value) {
-			_pricePerUnit.Value = long.TryParse(value, out var price) ? price : 0;
+			_pricePerUnit.Value = double.TryParse(value, out var price) ? price : 0;
 		}
 
 		void OnCountChanged(string value) {
-			_count.Value = long.TryParse(value, out var count) ? count : 0;
+			_count.Value = double.TryParse(value, out var count) ? count : 0;
 		}
 
 		void OnDecPriceClick() => _pricePerUnit.Value--;
@@ -102,7 +102,7 @@ namespace EconomicsGame.UnityComponents {
 
 		void OnIncCountClick() => _count.Value++;
 
-		bool IsStateValid(long totalPrice) =>
+		bool IsStateValid(double totalPrice) =>
 			(totalPrice > 0) && (_count.Value <= _itemEntity.Get<Item>().Count.Value);
 
 		void OnSellClick() {

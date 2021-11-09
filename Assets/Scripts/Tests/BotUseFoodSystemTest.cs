@@ -5,41 +5,37 @@ using FluentAssertions;
 using Leopotam.Ecs;
 using NUnit.Framework;
 using UniRx;
+using UnityEngine;
 
 namespace EconomicsGame.Tests {
 	public sealed class BotUseFoodSystemTest {
 		[Test]
 		public void IsFoodUsedByBotCharacter() {
-			var runtimeData = new RuntimeData(new InMemoryStore());
 			var world = new EcsWorld();
+			var runtimeData = new RuntimeData(world, new InMemoryStore());
 			var systems = new EcsSystems(world)
 				.Inject(runtimeData)
 				.Add(new BotUseFoodSystem())
 				.Add(new UseFoodSystem())
 				.Add(new CleanupItemSystem());
 			systems.Init();
-			var characterEntity = world.NewEntity();
+
+			var locationEntity = runtimeData.LocationService.CreateNewLocation(Vector2.zero);
+			ref var location = ref locationEntity.Get<Location>();
+			var characterEntity = runtimeData.CharacterService.CreateNewCharacterInLocation(ref location);
 			ref var character = ref characterEntity.Get<Character>();
-			character.Id = 1;
-			runtimeData.CharacterService.Add(character.Id, characterEntity);
 			characterEntity.Get<BotCharacterFlag>();
 			ref var stats = ref characterEntity.Get<CharacterStats>();
 			stats.Values = new ReactiveDictionary<string, ReactiveProperty<float>>();
-			stats.Values.Add("Hunger", new ReactiveProperty<float>(1));
+			stats.Values["Hunger"] = new ReactiveProperty<float>(1);
 			ref var inventory = ref characterEntity.Get<Inventory>();
 			inventory.Items = new ReactiveCollection<int>();
-			var itemEntity = world.NewEntity();
-			ref var item = ref itemEntity.Get<Item>();
-			item.Id = 1;
-			item.Owner = character.Id;
-			item.Name = "Food";
-			item.Count = new ReactiveProperty<double>(1);
-			itemEntity.Get<FoodItem>();
-			runtimeData.ItemService.AddToInventory(item.Id, itemEntity, ref inventory);
+			var itemEntity = runtimeData.ItemService.CreateNewItemInInventory(ref character, ref inventory);
+			runtimeData.ItemService.InitFoodItem(itemEntity, 1, 1);
 
 			systems.Run();
 
-			item.Count.Value.Should().Be(0);
+			itemEntity.Get<Item>().Count.Value.Should().Be(0);
 			inventory.Items.Should().BeEmpty();
 		}
 	}

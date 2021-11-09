@@ -13,12 +13,12 @@ namespace EconomicsGame.Services {
 		public ReactiveProperty<EcsEntity> SelectedLocation { get; } = new ReactiveProperty<EcsEntity>();
 		public ReactiveProperty<EcsEntity> SelectedCharacter { get; } = new ReactiveProperty<EcsEntity>();
 
-		public RuntimeData(IStore store) {
+		public RuntimeData(EcsWorld world, IStore store) {
 			PersistantService = new PersistantService(store);
 			var entityProvider = new EntityProvider();
-			LocationService = new LocationService(entityProvider);
-			CharacterService = new CharacterService(entityProvider);
-			ItemService = new ItemService(entityProvider);
+			LocationService = new LocationService(world, IdFactory, entityProvider);
+			CharacterService = new CharacterService(world, IdFactory, entityProvider);
+			ItemService = new ItemService(world, IdFactory, entityProvider);
 		}
 	}
 }

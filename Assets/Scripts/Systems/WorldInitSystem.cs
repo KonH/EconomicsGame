@@ -5,7 +5,6 @@ using UniRx;
 using UnityEngine;
 
 namespace EconomicsGame.Systems {
-	// TODO: refactor to proper use elements
 	public sealed class WorldInitSystem : IEcsInitSystem {
 		readonly EcsWorld _world;
 		readonly RuntimeData _runtimeData;
@@ -24,74 +23,44 @@ namespace EconomicsGame.Systems {
 		// TODO: to custom system/service
 		void Generate() {
 			var idFactory = _runtimeData.IdFactory;
+			var locationService = _runtimeData.LocationService;
+			var characterService = _runtimeData.CharacterService;
+			var itemService = _runtimeData.ItemService;
 			var first = true;
 			foreach ( var locationSetup in _locations ) {
-				var locationEntity = _world.NewEntity();
+				var locationEntity = locationService.CreateNewLocation(locationSetup);
 				ref var location = ref locationEntity.Get<Location>();
-				location.Id = idFactory.GenerateNewId<Location>();
-				location.Name = $"Location {location.Id.ToString()}";
-				location.Position = locationSetup;
-				location.Characters = new ReactiveCollection<int>();
-				location.Trades = new ReactiveCollection<int>();
-
 				if ( !first ) {
 					ref var source = ref locationEntity.Get<FoodSource>();
 					source.Remaining = 10;
-				}
-				_runtimeData.LocationService.Add(location.Id, locationEntity);
-
-				if ( !first ) {
 					continue;
 				}
 				for ( var i = 0; i < 5; i++ ) {
-					var characterEntity = _world.NewEntity();
+					var characterEntity = characterService.CreateNewCharacterInLocation(ref location);
 					ref var character = ref characterEntity.Get<Character>();
-					character.Id = idFactory.GenerateNewId<Character>();
-					character.Name = $"Character {character.Id.ToString()}";
-					character.CurrentLocation = location.Id;
-					character.Position = new ReactiveProperty<Vector2>(location.Position);
+					ref var inventory = ref characterEntity.Get<Inventory>();
 					if ( first ) {
 						characterEntity.Get<PlayerCharacterFlag>();
 						first = false;
 					} else {
 						characterEntity.Get<BotCharacterFlag>();
 					}
-					ref var inventory = ref characterEntity.Get<Inventory>();
-					inventory.Items = new ReactiveCollection<int>();
 
-					{
-						var itemEntity = _world.NewEntity();
-						ref var item = ref itemEntity.Get<Item>();
-						item.Id = idFactory.GenerateNewId<Item>();
-						item.Owner = character.Id;
-						item.Name = "Food";
-						item.Count = new ReactiveProperty<double>(1);
-						ref var foodItem = ref itemEntity.Get<FoodItem>();
-						foodItem.Restore = 1;
-						_runtimeData.ItemService.AddToInventory(item.Id, itemEntity, ref inventory);
-					}
-					{
-						var itemEntity = _world.NewEntity();
-						ref var item = ref itemEntity.Get<Item>();
-						item.Id = idFactory.GenerateNewId<Item>();
-						item.Owner = character.Id;
-						item.Name = "Cash";
-						item.Count = new ReactiveProperty<double>(100);
-						_runtimeData.ItemService.AddToInventory(item.Id, itemEntity, ref inventory);
-					}
+					var foodEntity = itemService.CreateNewItemInInventory(ref character, ref inventory);
+					itemService.InitFoodItem(foodEntity, 1, 1);
+
+					var cashEntity = itemService.CreateNewItemInInventory(ref character, ref inventory);
+					itemService.InitCashItem(cashEntity, 100);
 
 					ref var stats = ref characterEntity.Get<CharacterStats>();
-					stats.Values = new ReactiveDictionary<string, ReactiveProperty<float>>();
-					stats.Values.Add("Hunger", new ReactiveProperty<float>(0));
-					stats.Values.Add("Health", new ReactiveProperty<float>(1));
-					if ( i == 1 ) {
-						stats.Values.Add("Brave", new ReactiveProperty<float>(0));
+					switch ( i ) {
+						case 1:
+							stats.Values.Add("Brave", new ReactiveProperty<float>(0));
+							break;
+						case 2:
+							stats.Values.Add("Coward", new ReactiveProperty<float>(0));
+							break;
 					}
-					if ( i == 2 ) {
-						stats.Values.Add("Coward", new ReactiveProperty<float>(0));
-					}
-
-					_runtimeData.CharacterService.AddToLocation(character.Id, characterEntity, ref location);
 				}
 			}
 		}

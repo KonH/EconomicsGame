@@ -35,16 +35,8 @@ namespace EconomicsGame.Systems {
 				}
 				ref var character = ref _filter.Get1(characterIdx);
 				if ( shouldAddItem ) {
-					var newItemId = idFactory.GenerateNewId<Item>();
-					var itemEntity = _world.NewEntity();
-					ref var item = ref itemEntity.Get<Item>();
-					item.Id = newItemId;
-					item.Owner = character.Id;
-					item.Name = "Food";
-					item.Count = new ReactiveProperty<double>(1);
-					ref var foodItem = ref itemEntity.Get<FoodItem>();
-					foodItem.Restore = 1;
-					itemService.AddToInventory(newItemId, itemEntity, ref inventory);
+					var itemEntity = itemService.CreateNewItemInInventory(ref character, ref inventory);
+					itemService.InitFoodItem(itemEntity, 1, 1);
 				}
 				var locationEntity = locationService.GetEntity(mineFoodAction.TargetLocation);
 				ref var source = ref locationEntity.Get<FoodSource>();
