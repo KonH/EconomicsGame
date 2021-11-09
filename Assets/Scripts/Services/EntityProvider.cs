@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using EconomicsGame.Components;
 using Leopotam.Ecs;
 using UnityEngine.Assertions;
 

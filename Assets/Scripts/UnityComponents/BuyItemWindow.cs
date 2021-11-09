@@ -35,7 +35,7 @@ namespace EconomicsGame.UnityComponents {
 			_pricePerUnitText.text = $"Price: {itemEntity.Get<Trade>().PricePerUnit}";
 			_count.Value = 0;
 			_count
-				.Subscribe(v => _countInput.text = v.ToString())
+				.Subscribe(v => _countInput.text = v.ToString("F"))
 				.AddTo(_disposable);
 			var pricePerUnit = itemEntity.Get<Trade>().PricePerUnit;
 			_count

@@ -2,7 +2,6 @@ using EconomicsGame.Components;
 using EconomicsGame.Services;
 using Leopotam.Ecs;
 using UnityEngine;
-using UnityEngine.Assertions;
 
 namespace EconomicsGame.Systems {
 	public sealed class CleanupItemSystem : IEcsRunSystem {

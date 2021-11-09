@@ -22,7 +22,6 @@ namespace EconomicsGame.Systems {
 
 		// TODO: to custom system/service
 		void Generate() {
-			var idFactory = _runtimeData.IdFactory;
 			var locationService = _runtimeData.LocationService;
 			var characterService = _runtimeData.CharacterService;
 			var itemService = _runtimeData.ItemService;

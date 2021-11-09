@@ -32,7 +32,7 @@ namespace EconomicsGame.UnityComponents {
 			_headerText.text = $"Sell {itemEntity.Get<Item>().Name}";
 			_pricePerUnit.Value = 0;
 			_pricePerUnit
-				.Subscribe(v => _pricePerUnitInput.text = v.ToString())
+				.Subscribe(v => _pricePerUnitInput.text = v.ToString("F"))
 				.AddTo(_disposable);
 			_pricePerUnit
 				.Subscribe(v => _totalPrice.Value = v * _count.Value)
@@ -43,7 +43,7 @@ namespace EconomicsGame.UnityComponents {
 				.AddTo(_disposable);
 			_count.Value = 0;
 			_count
-				.Subscribe(v => _countInput.text = v.ToString())
+				.Subscribe(v => _countInput.text = v.ToString("F"))
 				.AddTo(_disposable);
 			_count
 				.Subscribe(v => _totalPrice.Value = _pricePerUnit.Value * v)

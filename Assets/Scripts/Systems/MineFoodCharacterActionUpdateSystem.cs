@@ -1,17 +1,14 @@
 using EconomicsGame.Components;
 using EconomicsGame.Services;
 using Leopotam.Ecs;
-using UniRx;
 using UnityEngine;
 
 namespace EconomicsGame.Systems {
 	public sealed class MineFoodCharacterActionUpdateSystem : IEcsRunSystem {
-		readonly EcsWorld _world;
 		readonly RuntimeData _runtimeData;
 		readonly EcsFilter<Character, MineFoodCharacterAction, CharacterActionProgress, Inventory>.Exclude<DeadCharacterFlag> _filter;
 
 		void IEcsRunSystem.Run() {
-			var idFactory = _runtimeData.IdFactory;
 			var itemService = _runtimeData.ItemService;
 			var locationService = _runtimeData.LocationService;
 			foreach ( var characterIdx in _filter ) {

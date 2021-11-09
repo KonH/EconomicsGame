@@ -5,12 +5,10 @@ using UnityEngine;
 
 namespace EconomicsGame.Systems {
 	public class SellItemSystem : IEcsRunSystem {
-		readonly EcsWorld _world;
 		readonly RuntimeData _runtimeData;
 		readonly EcsFilter<Item, SellItemEvent> _filter;
 
 		public void Run() {
-			var idFactory = _runtimeData.IdFactory;
 			var characterService = _runtimeData.CharacterService;
 			var itemService = _runtimeData.ItemService;
 			var locationService = _runtimeData.LocationService;
