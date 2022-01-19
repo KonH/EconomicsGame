@@ -71,6 +71,10 @@ namespace EconomicsGame.Startup {
 				.OneFrame<MoveCharacterActionEvent>()
 				.OneFrame<MineFoodCharacterActionEvent>()
 				.Init();
+			foreach ( var initializer in _sceneData.Initializers ) {
+				var postInitializer = initializer as IPostInitializer;
+				postInitializer?.PostInit();
+			}
 		}
 
 		void Update() {

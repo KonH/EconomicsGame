@@ -12,7 +12,6 @@ namespace EconomicsGame.Systems {
 		public WorldLoader(EcsWorld world, RuntimeData runtimeData) {
 			_world = world;
 			_runtimeData = runtimeData;
-
 		}
 
 		public bool TryLoad() {
@@ -40,6 +39,8 @@ namespace EconomicsGame.Systems {
 						ref var item = ref entity.Get<Item>();
 						_runtimeData.IdFactory.AdvanceTo<Item>(item.Id);
 						_runtimeData.ItemService.AddInitializedItem(item.Id, entity);
+					} else if ( componentType == typeof(Market) ) {
+						_runtimeData.MarketService.AddMarket(entity);
 					}
 				}
 			}

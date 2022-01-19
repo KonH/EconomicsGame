@@ -17,6 +17,7 @@ namespace EconomicsGame.Tests {
 				.Inject(runtimeData)
 				.Add(new BuyItemSystem());
 			systems.Init();
+			runtimeData.MarketService.CreateMarket();
 			var locationEntity = runtimeData.LocationService.CreateNewLocation(Vector2.zero);
 			ref var location = ref locationEntity.Get<Location>();
 			var characterService = runtimeData.CharacterService;
@@ -35,7 +36,7 @@ namespace EconomicsGame.Tests {
 			itemService.InitCashItem(buyerMoneyItemEntity, 1);
 			var sourceEntity = world.NewEntity();
 			sourceEntity.Get<Item>();
-			var tradeItemEntity = itemService.CreateTradeAtLocation(ref sellerCharacter, ref location, sourceEntity, 1, 1);
+			var tradeItemEntity = itemService.CreateTrade(ref sellerCharacter, sourceEntity, 1, 1);
 			ref var buyEvent = ref tradeItemEntity.Get<BuyItemEvent>();
 			buyEvent.Buyer = buyerCharacter.Id;
 			buyEvent.Count = 1;

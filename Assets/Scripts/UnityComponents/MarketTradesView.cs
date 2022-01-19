@@ -7,7 +7,7 @@ using UniRx;
 using UnityEngine;
 
 namespace EconomicsGame.UnityComponents {
-	sealed class LocationTradesView : StartupInitializer {
+	sealed class MarketTradesView : StartupInitializer, IPostInitializer {
 		readonly Dictionary<int, TradeView> _items = new Dictionary<int, TradeView>();
 		readonly Stack<TradeView> _itemPool = new Stack<TradeView>();
 
@@ -24,37 +24,24 @@ namespace EconomicsGame.UnityComponents {
 			_sceneData = startup.SceneData;
 		}
 
-		void Start() {
-			_runtimeData.SelectedCharacter.Subscribe(OnSelectedCharacterChanged);
-			_runtimeData.SelectedLocation.Subscribe(OnSelectedLocationChanged);
+		public void PostInit() {
+			ref var market = ref _runtimeData.MarketService.Market;
+			Init(ref market);
 		}
 
-		void OnSelectedCharacterChanged(EcsEntity entity) {
-			OnSelectedLocationChanged(_runtimeData.SelectedLocation.Value);
-		}
-
-		void OnSelectedLocationChanged(EcsEntity entity) {
-			var isAlive = entity.IsAlive();
-			gameObject.SetActive(isAlive);
-			if ( isAlive && entity.Has<Location>() ) {
-				Init(ref entity.Get<Location>());
-			} else {
-				DeInit();
-			}
-		}
-
-		void Init(ref Location location) {
+		void Init(ref Market market) {
 			DeInit();
 			_disposable = new CompositeDisposable();
-			foreach ( var item in location.Trades ) {
+			var trades = market.Trades;
+			foreach ( var item in trades ) {
 				OnAdd(ConvertIdToEntity(item));
 			}
-			location.Trades
+			trades
 				.ObserveAdd()
 				.Select(e => ConvertIdToEntity(e.Value))
 				.Subscribe(OnAdd)
 				.AddTo(_disposable);
-			location.Trades
+			trades
 				.ObserveRemove()
 				.Subscribe(e => OnRemove(e.Value))
 				.AddTo(_disposable);

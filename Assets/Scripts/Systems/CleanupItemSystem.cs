@@ -18,9 +18,8 @@ namespace EconomicsGame.Systems {
 				var characterEntity = characterService.GetEntity(item.Owner);
 				if ( itemEntity.Has<Trade>() ) {
 					ref var trade = ref itemEntity.Get<Trade>();
-					ref var location = ref locationService.GetEntity(trade.Location).Get<Location>();
-					itemService.RemoveTradeFromLocation(item.Id, ref location);
-					Debug.Log($"Item {item.Log()} removed from location {location.Log()} trades");
+					itemService.RemoveTrade(item.Id);
+					Debug.Log($"Item {item.Log()} removed from trades");
 				} else {
 					ref var inventory = ref characterEntity.Get<Inventory>();
 					itemService.RemoveFromInventory(item.Id, ref inventory);

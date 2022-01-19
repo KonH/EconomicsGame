@@ -31,7 +31,6 @@ namespace EconomicsGame.Services {
 			location.Name = $"Location {location.Id.ToString()}";
 			location.Position = position;
 			location.Characters = new ReactiveCollection<int>();
-			location.Trades = new ReactiveCollection<int>();
 			AddInitializedLocation(location.Id, entity);
 			return entity;
 		}

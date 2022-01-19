@@ -10,7 +10,7 @@ namespace EconomicsGame.Tests {
 		[Test]
 		public void IsItemAssignedToEntityProvider() {
 			var entityProvider = new EntityProvider();
-			var service = Services.CreateItemService(new EcsWorld(), entityProvider);
+			var service = Services.CreateItemService(new EcsWorld(), entityProvider, null);
 
 			service.AddInitializedItem(1, EcsEntity.Null);
 
@@ -21,7 +21,7 @@ namespace EconomicsGame.Tests {
 		public void IsInventoryItemHasValidId() {
 			var world = new EcsWorld();
 			var entityProvider = new EntityProvider();
-			var service = Services.CreateItemService(world, entityProvider);
+			var service = Services.CreateItemService(world, entityProvider, null);
 			ref var location = ref Services.CreateLocationService(world, entityProvider)
 				.CreateNewLocation(Vector2.zero).Get<Location>();
 			var characterEntity = Services.CreateCharacterService(world, entityProvider)
@@ -39,7 +39,7 @@ namespace EconomicsGame.Tests {
 		public void IsItemAddedToInventory() {
 			var world = new EcsWorld();
 			var entityProvider = new EntityProvider();
-			var service = Services.CreateItemService(world, entityProvider);
+			var service = Services.CreateItemService(world, entityProvider, null);
 			ref var location = ref Services.CreateLocationService(world, entityProvider)
 				.CreateNewLocation(Vector2.zero).Get<Location>();
 			var characterEntity = Services.CreateCharacterService(world, entityProvider)
@@ -57,7 +57,7 @@ namespace EconomicsGame.Tests {
 		public void IsInventoryItemHasValidOwner() {
 			var world = new EcsWorld();
 			var entityProvider = new EntityProvider();
-			var service = Services.CreateItemService(world, entityProvider);
+			var service = Services.CreateItemService(world, entityProvider, null);
 			ref var location = ref Services.CreateLocationService(world, entityProvider)
 				.CreateNewLocation(Vector2.zero).Get<Location>();
 			var characterEntity = Services.CreateCharacterService(world, entityProvider)
@@ -75,7 +75,7 @@ namespace EconomicsGame.Tests {
 		public void IsItemRemovedFromInventory() {
 			var world = new EcsWorld();
 			var entityProvider = new EntityProvider();
-			var service = Services.CreateItemService(world, entityProvider);
+			var service = Services.CreateItemService(world, entityProvider, null);
 			ref var location = ref Services.CreateLocationService(world, entityProvider)
 				.CreateNewLocation(Vector2.zero).Get<Location>();
 			var characterEntity = Services.CreateCharacterService(world, entityProvider)
@@ -94,32 +94,36 @@ namespace EconomicsGame.Tests {
 		public void IsTradeAddedToLocation() {
 			var world = new EcsWorld();
 			var entityProvider = new EntityProvider();
-			var service = Services.CreateItemService(world, entityProvider);
+			var marketService = new MarketService(world);
+			marketService.CreateMarket();
+			var service = Services.CreateItemService(world, entityProvider, marketService);
 			ref var location = ref Services.CreateLocationService(world, entityProvider)
 				.CreateNewLocation(Vector2.zero).Get<Location>();
 			ref var character = ref Services.CreateCharacterService(world, entityProvider)
 				.CreateNewCharacterInLocation(ref location).Get<Character>();
 
-			service.CreateTradeAtLocation(ref character, ref location, world.NewEntity(), 1, 1);
+			service.CreateTrade(ref character, world.NewEntity(), 1, 1);
 
-			location.Trades.Should().Contain(1);
+			marketService.Market.Trades.Should().Contain(1);
 		}
 
 		[Test]
 		public void IsTradeRemovedFromLocation() {
 			var world = new EcsWorld();
 			var entityProvider = new EntityProvider();
-			var service = Services.CreateItemService(world, entityProvider);
+			var marketService = new MarketService(world);
+			marketService.CreateMarket();
+			var service = Services.CreateItemService(world, entityProvider, marketService);
 			ref var location = ref Services.CreateLocationService(world, entityProvider)
 				.CreateNewLocation(Vector2.zero).Get<Location>();
 			ref var character = ref Services.CreateCharacterService(world, entityProvider)
 				.CreateNewCharacterInLocation(ref location).Get<Character>();
-			var tradeEntity = service.CreateTradeAtLocation(ref character, ref location, world.NewEntity(), 1, 1);
+			var tradeEntity = service.CreateTrade(ref character, world.NewEntity(), 1, 1);
 			ref var item = ref tradeEntity.Get<Item>();
 
-			service.RemoveTradeFromLocation(item.Id, ref location);
+			service.RemoveTrade(item.Id);
 
-			location.Trades.Should().BeEmpty();
+			marketService.Market.Trades.Should().BeEmpty();
 		}
 	}
 }

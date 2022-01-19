@@ -15,10 +15,11 @@ namespace EconomicsGame.Tests {
 				new IdFactory(),
 				entityProvider);
 
-		public static ItemService CreateItemService(EcsWorld world, EntityProvider entityProvider) =>
+		public static ItemService CreateItemService(EcsWorld world, EntityProvider entityProvider, MarketService marketService) =>
 			new ItemService(
 				world,
 				new IdFactory(),
-				entityProvider);
+				entityProvider,
+				marketService);
 	}
 }

@@ -9,11 +9,13 @@ namespace EconomicsGame.Services {
 		readonly EcsWorld _world;
 		readonly IdFactory _idFactory;
 		readonly EntityProvider _entityProvider;
+		readonly MarketService _marketService;
 
-		public ItemService(EcsWorld world, IdFactory idFactory, EntityProvider entityProvider) {
+		public ItemService(EcsWorld world, IdFactory idFactory, EntityProvider entityProvider, MarketService marketService) {
 			_world = world;
 			_idFactory = idFactory;
 			_entityProvider = entityProvider;
+			_marketService = marketService;
 		}
 
 		public EcsEntity GetEntity(int id) => _entityProvider.GetEntity<Item>(id);
@@ -46,8 +48,8 @@ namespace EconomicsGame.Services {
 			Remove(id);
 		}
 
-		public EcsEntity CreateTradeAtLocation(
-			ref Character character, ref Location location, EcsEntity sourceEntity, double count, double pricePerUnit) {
+		public EcsEntity CreateTrade(
+			ref Character character, EcsEntity sourceEntity, double count, double pricePerUnit) {
 			var entity = sourceEntity.Copy();
 			ref var item = ref entity.Get<Item>();
 			PreInitItem(ref item, ref character);
@@ -55,17 +57,18 @@ namespace EconomicsGame.Services {
 			InitCount(ref item, count);
 			ref var trade = ref entity.Get<Trade>();
 			trade.PricePerUnit = pricePerUnit;
-			trade.Location = location.Id;
-			Debug.Log($"CreateTradeAtLocation: {item.Log()} x{item.Count} by {trade.PricePerUnit} from {character.Log()} character at {location.Log()}");
-			Assert.IsFalse(location.Trades.Contains(item.Id));
-			location.Trades.Add(item.Id);
+			Debug.Log($"CreateTrade: {item.Log()} x{item.Count} by {trade.PricePerUnit} from {character.Log()} character");
+			ref var market = ref _marketService.Market;
+			Assert.IsFalse(market.Trades.Contains(item.Id));
+			market.Trades.Add(item.Id);
 			return entity;
 		}
 
-		public void RemoveTradeFromLocation(int id, ref Location location) {
-			Debug.Log($"RemoveTradeFromLocation: IT:{id}");
-			location.Trades.Remove(id);
-			Assert.IsFalse(location.Trades.Contains(id));
+		public void RemoveTrade(int id) {
+			Debug.Log($"RemoveTrade: IT:{id}");
+			ref var market = ref _marketService.Market;
+			market.Trades.Remove(id);
+			Assert.IsFalse(market.Trades.Contains(id));
 			Remove(id);
 		}
 

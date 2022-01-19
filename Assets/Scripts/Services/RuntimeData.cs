@@ -8,6 +8,7 @@ namespace EconomicsGame.Services {
 
 		public LocationService LocationService { get; }
 		public CharacterService CharacterService { get; }
+		public MarketService MarketService { get; }
 		public ItemService ItemService { get; }
 
 		public ReactiveProperty<EcsEntity> SelectedLocation { get; } = new ReactiveProperty<EcsEntity>();
@@ -18,7 +19,8 @@ namespace EconomicsGame.Services {
 			var entityProvider = new EntityProvider();
 			LocationService = new LocationService(world, IdFactory, entityProvider);
 			CharacterService = new CharacterService(world, IdFactory, entityProvider);
-			ItemService = new ItemService(world, IdFactory, entityProvider);
+			MarketService = new MarketService(world);
+			ItemService = new ItemService(world, IdFactory, entityProvider, MarketService);
 		}
 	}
 }

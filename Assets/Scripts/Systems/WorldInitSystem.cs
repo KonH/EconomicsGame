@@ -62,6 +62,8 @@ namespace EconomicsGame.Systems {
 					}
 				}
 			}
+			var marketService = _runtimeData.MarketService;
+			marketService.CreateMarket();
 		}
 	}
 }
