@@ -2,15 +2,22 @@ using EconomicsGame.Components;
 using EconomicsGame.Services;
 using Leopotam.Ecs;
 using UnityEngine;
+using LocationService = EconomicsGame.Services.LocationService;
 
 namespace EconomicsGame.Systems {
-	public sealed class MineFoodCharacterActionUpdateSystem : IEcsRunSystem {
+	public sealed class MineFoodCharacterActionUpdateSystem : IEcsInitSystem, IEcsRunSystem {
 		readonly RuntimeData _runtimeData;
 		readonly EcsFilter<Character, MineFoodCharacterAction, CharacterActionProgress, Inventory>.Exclude<DeadCharacterFlag> _filter;
 
-		void IEcsRunSystem.Run() {
-			var itemService = _runtimeData.ItemService;
-			var locationService = _runtimeData.LocationService;
+		ItemService _itemService;
+		LocationService _locationService;
+
+		public void Init() {
+			_itemService = _runtimeData.ItemService;
+			_locationService = _runtimeData.LocationService;
+		}
+
+		public void Run() {
 			foreach ( var characterIdx in _filter ) {
 				ref var characterEntity = ref _filter.GetEntity(characterIdx);
 				ref var mineFoodAction = ref _filter.Get2(characterIdx);
@@ -22,7 +29,7 @@ namespace EconomicsGame.Systems {
 				ref var inventory = ref _filter.Get4(characterIdx);
 				var shouldAddItem = true;
 				foreach ( var itemId in inventory.Items ) {
-					ref var item = ref itemService.GetEntity(itemId).Get<Item>();
+					ref var item = ref _itemService.GetEntity(itemId).Get<Item>();
 					if ( item.Name != "Food" ) {
 						continue;
 					}
@@ -32,10 +39,10 @@ namespace EconomicsGame.Systems {
 				}
 				ref var character = ref _filter.Get1(characterIdx);
 				if ( shouldAddItem ) {
-					var itemEntity = itemService.CreateNewItemInInventory(ref character, ref inventory);
-					itemService.InitFoodItem(itemEntity, 1, 1);
+					var itemEntity = _itemService.CreateNewItemInInventory(ref character, ref inventory);
+					_itemService.InitFoodItem(itemEntity, 1, 1);
 				}
-				var locationEntity = locationService.GetEntity(mineFoodAction.TargetLocation);
+				var locationEntity = _locationService.GetEntity(mineFoodAction.TargetLocation);
 				ref var source = ref locationEntity.Get<FoodSource>();
 				source.Locked--;
 				source.Remaining--;

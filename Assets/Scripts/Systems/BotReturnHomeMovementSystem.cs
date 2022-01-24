@@ -3,21 +3,28 @@ using EconomicsGame.Components;
 using EconomicsGame.Services;
 using Leopotam.Ecs;
 using UnityEngine;
+using LocationService = EconomicsGame.Services.LocationService;
 
 namespace EconomicsGame.Systems {
-	public sealed class BotReturnHomeMovementSystem : IEcsRunSystem {
+	public sealed class BotReturnHomeMovementSystem : IEcsInitSystem, IEcsRunSystem {
 		readonly RuntimeData _runtimeData;
 		readonly EcsFilter<Character, BotCharacterFlag, Inventory>.Exclude<DeadCharacterFlag, BusyCharacterFlag> _filter;
 
+		ItemService _itemService;
+		LocationService _locationService;
+
+		public void Init() {
+			_itemService = _runtimeData.ItemService;
+			_locationService = _runtimeData.LocationService;
+		}
+
 		public void Run() {
-			var itemService = _runtimeData.ItemService;
-			var locationService = _runtimeData.LocationService;
 			foreach ( var characterIdx in _filter ) {
 				var shouldMoveToHome = false;
 				var totalFoodCount = 0.0;
 				ref var inventory = ref _filter.Get3(characterIdx);
 				foreach ( var itemId in inventory.Items ) {
-					var itemEntity = itemService.GetEntity(itemId);
+					var itemEntity = _itemService.GetEntity(itemId);
 					ref var item = ref itemEntity.Get<Item>();
 					if ( item.Name != "Food" ) {
 						continue;
@@ -33,12 +40,12 @@ namespace EconomicsGame.Systems {
 					continue;
 				}
 				ref var character = ref _filter.Get1(characterIdx);
-				var currentLocationEntity = locationService.GetEntity(character.CurrentLocation);
+				var currentLocationEntity = _locationService.GetEntity(character.CurrentLocation);
 				if ( !currentLocationEntity.Has<FoodSource>() ) {
 					continue;
 				}
 				var possibleHomeLocations = new List<int>();
-				foreach ( var locationEntity in locationService.Locations ) {
+				foreach ( var locationEntity in _locationService.Locations ) {
 					ref var location = ref locationEntity.Get<Location>();
 					if ( location.Id == character.CurrentLocation ) {
 						continue;

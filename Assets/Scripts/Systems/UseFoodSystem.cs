@@ -4,17 +4,23 @@ using Leopotam.Ecs;
 using UnityEngine;
 
 namespace EconomicsGame.Systems {
-	public sealed class UseFoodSystem : IEcsRunSystem {
+	public sealed class UseFoodSystem : IEcsInitSystem, IEcsRunSystem {
 		readonly RuntimeData _runtimeData;
 		readonly EcsFilter<Item, FoodItem, UseItemEvent> _itemFilter;
 
+		CharacterService _characterService;
+		ItemService _itemService;
+
+		public void Init() {
+			_characterService = _runtimeData.CharacterService;
+			_itemService = _runtimeData.ItemService;
+		}
+
 		public void Run() {
-			var characterService = _runtimeData.CharacterService;
-			var itemService = _runtimeData.ItemService;
 			foreach ( var itemIdx in _itemFilter ) {
 				ref var item = ref _itemFilter.Get1(itemIdx);
 				ref var foodItem = ref _itemFilter.Get2(itemIdx);
-				var characterEntity = characterService.GetEntity(item.Owner);
+				var characterEntity = _characterService.GetEntity(item.Owner);
 				if ( !characterEntity.Has<CharacterStats>() ) {
 					continue;
 				}
@@ -27,7 +33,7 @@ namespace EconomicsGame.Systems {
 				var remainingCount = item.Count.Value;
 				Debug.Log($"Character {characterEntity.Get<Character>().Log()} consumes food item {item.Log()}, {remainingCount} remaining");
 				ref var entity = ref _itemFilter.GetEntity(itemIdx);
-				itemService.TryConsume(ref entity, ref item);
+				_itemService.TryConsume(ref entity, ref item);
 			}
 		}
 	}

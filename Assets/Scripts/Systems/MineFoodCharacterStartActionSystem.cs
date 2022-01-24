@@ -2,19 +2,25 @@ using EconomicsGame.Components;
 using EconomicsGame.Services;
 using Leopotam.Ecs;
 using UnityEngine;
+using LocationService = EconomicsGame.Services.LocationService;
 
 namespace EconomicsGame.Systems {
-	public sealed class MineFoodCharacterStartActionSystem : IEcsRunSystem {
+	public sealed class MineFoodCharacterStartActionSystem : IEcsInitSystem, IEcsRunSystem {
 		readonly RuntimeData _runtimeData;
 		readonly EcsFilter<Character, MineFoodCharacterActionEvent>.Exclude<BusyCharacterFlag, DeadCharacterFlag> _filter;
 
-		void IEcsRunSystem.Run() {
-			var locationService = _runtimeData.LocationService;
+		LocationService _locationService;
+
+		public void Init() {
+			_locationService = _runtimeData.LocationService;
+		}
+
+		public void Run() {
 			foreach ( var characterIdx in _filter ) {
 				ref var mineFoodActionEvent = ref _filter.Get2(characterIdx);
 				ref var characterEntity = ref _filter.GetEntity(characterIdx);
 				ref var mineFoodAction = ref characterEntity.Get<MineFoodCharacterAction>();
-				var targetLocationEntity = locationService.GetEntity(mineFoodActionEvent.TargetLocation);
+				var targetLocationEntity = _locationService.GetEntity(mineFoodActionEvent.TargetLocation);
 				ref var targetLocation = ref targetLocationEntity.Get<Location>();
 				mineFoodAction.TargetLocation = targetLocation.Id;
 				ref var actionProgress = ref characterEntity.Get<CharacterActionProgress>();

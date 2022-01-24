@@ -3,16 +3,22 @@ using EconomicsGame.Services;
 using Leopotam.Ecs;
 
 namespace EconomicsGame.Systems {
-	public sealed class BotSellFoodSystem : IEcsRunSystem {
+	public sealed class BotSellFoodSystem : IEcsInitSystem, IEcsRunSystem {
 		readonly RuntimeData _runtimeData;
 		readonly EcsFilter<Character, BotCharacterFlag, Inventory>.Exclude<DeadCharacterFlag, BusyCharacterFlag> _filter;
 
+		LocationService _locationService;
+		ItemService _itemService;
+
+		public void Init() {
+			_locationService = _runtimeData.LocationService;
+			_itemService = _runtimeData.ItemService;
+		}
+
 		public void Run() {
-			var locationService = _runtimeData.LocationService;
-			var itemService = _runtimeData.ItemService;
 			foreach ( var characterIdx in _filter ) {
 				ref var character = ref _filter.Get1(characterIdx);
-				var currentLocationEntity = locationService.GetEntity(character.CurrentLocation);
+				var currentLocationEntity = _locationService.GetEntity(character.CurrentLocation);
 				if ( currentLocationEntity.Has<FoodSource>() ) {
 					continue;
 				}
@@ -21,7 +27,7 @@ namespace EconomicsGame.Systems {
 				var lastFoodEntity = default(EcsEntity);
 				ref var inventory = ref _filter.Get3(characterIdx);
 				foreach ( var itemId in inventory.Items ) {
-					var itemEntity = itemService.GetEntity(itemId);
+					var itemEntity = _itemService.GetEntity(itemId);
 					ref var item = ref itemEntity.Get<Item>();
 					if ( item.Name != "Food" ) {
 						continue;

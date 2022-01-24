@@ -5,13 +5,19 @@ using EconomicsGame.Services;
 using Leopotam.Ecs;
 
 namespace EconomicsGame.Systems {
-	public class SaveSystem : IEcsRunSystem {
+	public class SaveSystem : IEcsInitSystem, IEcsRunSystem {
 		readonly EcsWorld _world;
 		readonly RuntimeData _runtimeData;
+
+		PersistantService _persistantService;
 
 		EcsEntity[] _entities;
 		Type[] _componentTypes;
 		object[] _componentValues;
+
+		public void Init() {
+			_persistantService = _runtimeData.PersistantService;
+		}
 
 		public void Run() {
 			// TODO: trigger by event
@@ -34,7 +40,7 @@ namespace EconomicsGame.Systems {
 					persistantEntities.Add(persistantComponents);
 				}
 			}
-			_runtimeData.PersistantService.Save(persistantEntities);
+			_persistantService.Save(persistantEntities);
 		}
 	}
 }
