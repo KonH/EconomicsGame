@@ -88,15 +88,8 @@ namespace EconomicsGame.UnityComponents {
 			if ( (_count.Value <= 0) || (_count.Value > _itemEntity.Get<Item>().Count.Value) ) {
 				return false;
 			}
-			// TODO: extract to service
-			ref var inventory = ref _characterEntity.Get<Inventory>();
-			foreach ( var itemId in inventory.Items ) {
-				ref var item = ref _runtimeData.ItemService.GetEntity(itemId).Get<Item>();
-				if ( item.Name == "Cash" ) { // TODO: rework condition
-					return item.Count.Value >= totalPrice;
-				}
-			}
-			return false;
+			var currentCash = _runtimeData.CashService.GetCurrentCash(ref _characterEntity);
+			return currentCash >= totalPrice;
 		}
 
 		void OnBuyClick() {

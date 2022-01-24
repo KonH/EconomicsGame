@@ -73,7 +73,7 @@ namespace EconomicsGame.UnityComponents {
 			var instance = GetOrCreateItem();
 			var isUsableItem = entity.Has<FoodItem>();
 			var isPlayer = _playerEntity.Has<PlayerCharacterFlag>();
-			var isCash = item.Name == "Cash"; // TODO: rework conditions
+			var isCash = _runtimeData.CashService.IsCash(ref item);
 			instance.Init(_sceneData, entity, ref item, isUsableItem, isUsableItem && isPlayer, isPlayer && !isCash);
 			_items[item.Id] = instance;
 		}

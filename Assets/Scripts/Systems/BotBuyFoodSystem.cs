@@ -10,6 +10,7 @@ namespace EconomicsGame.Systems {
 		public void Run() {
 			var itemService = _runtimeData.ItemService;
 			var marketService = _runtimeData.MarketService;
+			var cashService = _runtimeData.CashService;
 			foreach ( var characterIdx in _filter ) {
 				ref var stats = ref _filter.Get3(characterIdx);
 				if ( !stats.Values.TryGetValue("Hunger", out var hunger) ) {
@@ -32,13 +33,17 @@ namespace EconomicsGame.Systems {
 				if ( hasFood ) {
 					continue;
 				}
-				ref var character = ref _filter.Get1(characterIdx);
+				var currentCash = cashService.GetCurrentCash(ref _filter.GetEntity(characterIdx));
 				ref var market = ref marketService.Market;
-				// TODO: check funds
+				ref var character = ref _filter.Get1(characterIdx);
 				foreach ( var tradeId in market.Trades ) {
 					var itemEntity = itemService.GetEntity(tradeId);
 					ref var item = ref itemEntity.Get<Item>();
 					if ( item.Name != "Food" ) {
+						continue;
+					}
+					var trade = itemEntity.Get<Trade>();
+					if ( trade.PricePerUnit > currentCash ) {
 						continue;
 					}
 					ref var buyEvent = ref itemEntity.Get<BuyItemEvent>();

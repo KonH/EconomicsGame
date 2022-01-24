@@ -89,6 +89,12 @@ namespace EconomicsGame.Services {
 		public void InitCount(EcsEntity entity, double count) =>
 			InitCount(ref entity.Get<Item>(), count);
 
+		public void TryConsume(ref EcsEntity entity, ref Item item) {
+			if ( item.Count.Value == 0 ) {
+				entity.Get<EmptyItemFlag>();
+			}
+		}
+
 		void InitItem(EcsEntity entity, string name, double count) {
 			ref var item = ref entity.Get<Item>();
 			item.Name = name;

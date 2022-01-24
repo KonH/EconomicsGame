@@ -21,9 +21,7 @@ namespace EconomicsGame.Systems {
 				itemEntity.Del<SellItemEvent>();
 				ref var character = ref characterService.GetEntity(itemToSell.Owner).Get<Character>();
 				var tradeEntity = itemService.CreateTrade(ref character, itemEntity, sellCount, pricePerUnit);
-				if ( itemToSell.Count.Value == 0 ) {
-					itemEntity.Get<EmptyItemFlag>();
-				}
+				itemService.TryConsume(ref itemEntity, ref itemToSell);
 				ref var tradeItem = ref tradeEntity.Get<Item>();
 				Debug.Log($"Character {character.Log()} sell {tradeItem.Log()} x{tradeItem.Count} by {pricePerUnit}/unit");
 			}

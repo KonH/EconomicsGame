@@ -10,6 +10,7 @@ namespace EconomicsGame.Systems {
 
 		public void Run() {
 			var characterService = _runtimeData.CharacterService;
+			var itemService = _runtimeData.ItemService;
 			foreach ( var itemIdx in _itemFilter ) {
 				ref var item = ref _itemFilter.Get1(itemIdx);
 				ref var foodItem = ref _itemFilter.Get2(itemIdx);
@@ -25,11 +26,8 @@ namespace EconomicsGame.Systems {
 				item.Count.Value -= 1;
 				var remainingCount = item.Count.Value;
 				Debug.Log($"Character {characterEntity.Get<Character>().Log()} consumes food item {item.Log()}, {remainingCount} remaining");
-				if ( remainingCount > 0 ) {
-					continue;
-				}
 				ref var entity = ref _itemFilter.GetEntity(itemIdx);
-				entity.Get<EmptyItemFlag>();
+				itemService.TryConsume(ref entity, ref item);
 			}
 		}
 	}

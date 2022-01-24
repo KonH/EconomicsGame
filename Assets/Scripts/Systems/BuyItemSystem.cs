@@ -13,6 +13,7 @@ namespace EconomicsGame.Systems {
 			// TODO: handle deps in all systems properly?
 			var characterService = _runtimeData.CharacterService;
 			var itemService = _runtimeData.ItemService;
+			var cashService = _runtimeData.CashService;
 			foreach ( var itemIdx in _filter ) {
 				ref var itemEntity = ref _filter.GetEntity(itemIdx);
 				ref var itemToBuy = ref _filter.Get1(itemIdx);
@@ -22,7 +23,7 @@ namespace EconomicsGame.Systems {
 				var totalPrice = trade.PricePerUnit * buyCount;
 				var buyer = buyEvent.Buyer;
 				var buyerCharacterEntity = characterService.GetEntity(buyer);
-				if ( !TryChangeCash(itemService, ref buyerCharacterEntity, -totalPrice) ) {
+				if ( !cashService.TryAddCash(ref buyerCharacterEntity, -totalPrice) ) {
 					continue;
 				}
 				itemToBuy.Count.Value -= buyCount;
@@ -33,44 +34,10 @@ namespace EconomicsGame.Systems {
 				boughtItemEntity.Del<Trade>();
 				itemService.InitCount(boughtItemEntity, buyCount);
 				var sellerCharacter = characterService.GetEntity(itemToBuy.Owner);
-				TryChangeCash(itemService, ref sellerCharacter, totalPrice);
-				if ( itemToBuy.Count.Value == 0 ) {
-					// TODO: handle it in one service
-					itemEntity.Get<EmptyItemFlag>();
-				}
+				cashService.TryAddCash(ref sellerCharacter, totalPrice);
+				itemService.TryConsume(ref itemEntity, ref itemToBuy);
 				Debug.Log($"{buyerCharacterEntity.Get<Character>().Log()} bought {boughtItemEntity.Get<Item>().Log()} x{buyCount} for {totalPrice}");
 			}
-		}
-
-		bool TryChangeCash(ItemService itemService, ref EcsEntity characterEntity, double addValue) {
-			ref var inventory = ref characterEntity.Get<Inventory>();
-			foreach ( var itemId in inventory.Items ) {
-				var itemEntity = itemService.GetEntity(itemId);
-				ref var item = ref itemEntity.Get<Item>();
-				if ( item.Name != "Cash" ) {
-					continue;
-				}
-				// TODO: rework checks
-				var newCount = item.Count.Value + addValue;
-				if ( newCount < 0 ) {
-					return false;
-				}
-				if ( newCount == 0 ) {
-					itemEntity.Get<EmptyItemFlag>();
-				}
-				item.Count.Value = newCount;
-				return true;
-			}
-			if ( addValue < 0 ) {
-				return false;
-			}
-			if ( addValue == 0 ) {
-				return true;
-			}
-			ref var character = ref characterEntity.Get<Character>();
-			var newItemEntity = itemService.CreateNewItemInInventory(ref character, ref inventory);
-			itemService.InitCashItem(newItemEntity, addValue);
-			return true;
 		}
 	}
 }
