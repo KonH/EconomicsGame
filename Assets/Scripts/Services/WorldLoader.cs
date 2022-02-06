@@ -4,8 +4,8 @@ using EconomicsGame.Services;
 using Leopotam.Ecs;
 using UnityEngine.Assertions;
 
-namespace EconomicsGame.Systems {
-	sealed class WorldLoader {
+namespace EconomicsGame.Services {
+	public sealed class WorldLoader {
 		readonly EcsWorld _world;
 		readonly RuntimeData _runtimeData;
 
