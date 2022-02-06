@@ -4,7 +4,6 @@ using Leopotam.Ecs;
 using UnityEngine;
 
 namespace EconomicsGame.Systems {
-	// TODO: safety from double buy issue
 	public class BuyItemSystem : IEcsInitSystem, IEcsRunSystem {
 		readonly RuntimeData _runtimeData;
 		readonly EcsFilter<Item, Trade, BuyItemEvent> _filter;
