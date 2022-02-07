@@ -2,27 +2,16 @@ using System;
 using System.Collections.Generic;
 using EconomicsGame.Components;
 using EconomicsGame.Services;
+using EconomicsGame.Services.ActionHandlers;
 using Leopotam.Ecs;
 using UnityEngine;
 using UniRx;
 
 namespace EconomicsGame.UnityComponents {
-	// TODO: can not use for non-player characters
-	// TODO: separated classes for action handlers / rework can checks to re-use it in bots
 	sealed class LocationActionsView : StartupInitializer {
-		readonly List<(
-			string,
-			Func<EcsEntity, EcsEntity, bool>,
-			Func<EcsEntity, EcsEntity, bool>,
-			Action<EcsEntity, EcsEntity>
-			)>
-			_actions = new List<(
-				string,
-				Func<EcsEntity, EcsEntity, bool>,
-				Func<EcsEntity, EcsEntity, bool>,
-				Action<EcsEntity, EcsEntity>)> {
-			("Move", ShowMove, CanMove, Move),
-			("Mine Food", ShowMineFood, CanMineFood, MineFood)
+		readonly List<IActionHandler> _actions = new List<IActionHandler> {
+			new MoveActionHandler(),
+			new MineFoodActionHandler()
 		};
 
 		readonly List<LocationActionView> _items = new List<LocationActionView>();
@@ -69,13 +58,8 @@ namespace EconomicsGame.UnityComponents {
 
 		void Init() {
 			DeInit();
-			foreach ( var pair in _actions ) {
-				var (text, visibleChecker, interactableChecker, action) = pair;
-				Add(text,
-					() => visibleChecker(_playerEntity, _locationEntity),
-					() => interactableChecker(_playerEntity, _locationEntity),
-					() => GetProgress(_playerEntity),
-					() => action(_playerEntity, _locationEntity));
+			foreach ( var handler in _actions ) {
+				Add(handler);
 			}
 		}
 
@@ -86,9 +70,9 @@ namespace EconomicsGame.UnityComponents {
 			}
 		}
 
-		void Add(string text, Func<bool> visibleChecker, Func<bool> interactableChecker, Func<float> progressHandler, Action action) {
+		void Add(IActionHandler handler) {
 			var instance = GetOrCreateItem();
-			instance.Init(text, visibleChecker, interactableChecker, progressHandler, action);
+			instance.Init(handler, _playerEntity, _locationEntity);
 			_items.Add(instance);
 		}
 
@@ -103,47 +87,6 @@ namespace EconomicsGame.UnityComponents {
 			itemView.DeInit();
 			_items.Remove(itemView);
 			_itemPool.Push(itemView);
-		}
-
-		static float GetProgress(EcsEntity characterEntity) {
-			if ( characterEntity.Has<CharacterActionProgress>() ) {
-				ref var actionProgress = ref characterEntity.Get<CharacterActionProgress>();
-				return actionProgress.Progress;
-			}
-			return 1.0f;
-		}
-
-		static bool ShowMove(EcsEntity characterEntity, EcsEntity locationEntity) {
-			return characterEntity.Get<Character>().CurrentLocation != locationEntity.Get<Location>().Id;
-		}
-
-		static bool CanMove(EcsEntity characterEntity, EcsEntity locationEntity) {
-			return !characterEntity.Has<BusyCharacterFlag>();
-		}
-
-		static void Move(EcsEntity characterEntity, EcsEntity locationEntity) {
-			ref var moveAction = ref characterEntity.Get<MoveCharacterActionEvent>();
-			moveAction.TargetLocation = locationEntity.Get<Location>().Id;
-		}
-
-		static bool ShowMineFood(EcsEntity characterEntity, EcsEntity locationEntity) {
-			if ( characterEntity.Get<Character>().CurrentLocation != locationEntity.Get<Location>().Id ) {
-				return false;
-			}
-			if ( !locationEntity.Has<FoodSource>() ) {
-				return false;
-			}
-			ref var source = ref locationEntity.Get<FoodSource>();
-			return (source.Remaining > 0) && (source.Locked < source.Remaining);
-		}
-
-		static bool CanMineFood(EcsEntity characterEntity, EcsEntity locationEntity) {
-			return !characterEntity.Has<BusyCharacterFlag>();
-		}
-
-		static void MineFood(EcsEntity characterEntity, EcsEntity locationEntity) {
-			ref var mineFoodAction = ref characterEntity.Get<MineFoodCharacterActionEvent>();
-			mineFoodAction.TargetLocation = locationEntity.Get<Location>().Id;
 		}
 	}
 }

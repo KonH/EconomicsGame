@@ -1,4 +1,6 @@
 using System;
+using EconomicsGame.Services.ActionHandlers;
+using Leopotam.Ecs;
 using TMPro;
 using UniRx;
 using UnityEngine;
@@ -11,20 +13,17 @@ namespace EconomicsGame.UnityComponents {
 		[SerializeField] Image _image;
 
 		CompositeDisposable _disposable;
-		Func<bool> _visibleChecker;
-		Func<bool> _interactableChecker;
-		Func<float> _progressHandler;
-		Action _action;
+		EcsEntity _playerEntity;
+		EcsEntity _locationEntity;
+		IActionHandler _handler;
 
-		// TODO: pass action handler class?
-		public void Init(string text, Func<bool> visibleChecker, Func<bool> interactableChecker, Func<float> progressHandler, Action action) {
+		public void Init(IActionHandler handler, EcsEntity playerEntity, EcsEntity locationEntity) {
 			_disposable = new CompositeDisposable();
 			gameObject.SetActive(true);
-			_text.text = text;
-			_visibleChecker = visibleChecker;
-			_interactableChecker = interactableChecker;
-			_progressHandler = progressHandler;
-			_action = action;
+			_text.text = handler.Name;
+			_handler = handler;
+			_playerEntity = playerEntity;
+			_locationEntity = locationEntity;
 			Observable.EveryUpdate()
 				.Subscribe(_ => UpdateState())
 				.AddTo(_disposable);
@@ -45,17 +44,26 @@ namespace EconomicsGame.UnityComponents {
 
 
 		void UpdateState() {
-			var isVisible = _visibleChecker?.Invoke() ?? false;
+			var isVisible = IsVisible();
 			gameObject.SetActive(isVisible);
 			if ( !isVisible ) {
 				return;
 			}
-			_button.interactable = _interactableChecker?.Invoke() ?? false;
-			_image.fillAmount = _progressHandler?.Invoke() ?? 1.0f;
+			_button.interactable = IsInteractable();
+			_image.fillAmount = GetProgress();
 		}
 
+		bool IsVisible() =>
+			_handler?.IsPotentialPossible(_playerEntity, _locationEntity) ?? false;
+
+		bool IsInteractable() =>
+			_handler?.IsReallyPossible(_playerEntity) ?? false;
+
+		float GetProgress() =>
+			_handler?.GetProgress(_playerEntity) ?? 1.0f;
+
 		void OnClick() {
-			_action?.Invoke();
+			_handler?.Perform(_playerEntity, _locationEntity);
 		}
 	}
 }
