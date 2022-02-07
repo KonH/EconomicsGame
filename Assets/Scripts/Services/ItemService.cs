@@ -1,3 +1,4 @@
+using System;
 using EconomicsGame.Components;
 using Leopotam.Ecs;
 using UniRx;
@@ -24,19 +25,20 @@ namespace EconomicsGame.Services {
 
 		public EcsEntity CreateNewItemInInventoryByCopy(
 			ref Character character, ref Inventory inventory, EcsEntity sourceEntity) =>
-			CreateNewItemInInventory(ref character, ref inventory, sourceEntity.Copy());
+			CreateNewItemInInventory(ref character, ref inventory, sourceEntity.Copy(), null);
 
 		public EcsEntity CreateNewItemInInventory(
-			ref Character character, ref Inventory inventory) =>
-			CreateNewItemInInventory(ref character, ref inventory, _world.NewEntity());
+			ref Character character, ref Inventory inventory, Action<EcsEntity> initializer = null) =>
+			CreateNewItemInInventory(ref character, ref inventory, _world.NewEntity(), initializer);
 
 		EcsEntity CreateNewItemInInventory(
-			ref Character character, ref Inventory inventory, EcsEntity entity) {
+			ref Character character, ref Inventory inventory, EcsEntity entity, Action<EcsEntity> initializer) {
 			ref var item = ref entity.Get<Item>();
 			PreInitItem(ref item, ref character);
 			Debug.Log($"CreateNewItemInInventory: {item.Log()} for {character.Log()} inventory");
 			AddInitializedItem(item.Id, entity);
 			Assert.IsFalse(inventory.Items.Contains(item.Id));
+			initializer?.Invoke(entity);
 			inventory.Items.Add(item.Id);
 			return entity;
 		}

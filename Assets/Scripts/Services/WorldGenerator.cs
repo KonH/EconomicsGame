@@ -42,11 +42,13 @@ namespace EconomicsGame.Services {
 						characterEntity.Get<BotCharacterFlag>();
 					}
 
-					var foodEntity = _itemService.CreateNewItemInInventory(ref character, ref inventory);
-					_itemService.InitFoodItem(foodEntity, 1, 1);
+					_itemService.CreateNewItemInInventory(
+						ref character, ref inventory,
+						e => _itemService.InitFoodItem(e, 1, 1));
 
-					var cashEntity = _itemService.CreateNewItemInInventory(ref character, ref inventory);
-					_itemService.InitCashItem(cashEntity, 100);
+					_itemService.CreateNewItemInInventory(
+						ref character, ref inventory,
+						e => _itemService.InitCashItem(e, 100));
 
 					ref var stats = ref characterEntity.Get<CharacterStats>();
 					switch ( i ) {

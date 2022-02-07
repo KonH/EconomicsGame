@@ -23,8 +23,9 @@ namespace EconomicsGame.Services {
 			if ( !TryGetCash(ref characterEntity, out var cashEntity, out var cashItem) ) {
 				ref var character = ref characterEntity.Get<Character>();
 				ref var inventory = ref characterEntity.Get<Inventory>();
-				cashEntity = _itemService.CreateNewItemInInventory(ref character, ref inventory);
-				_itemService.InitCashItem(cashEntity, addCash);
+				cashEntity = _itemService.CreateNewItemInInventory(
+					ref character, ref inventory,
+					e => _itemService.InitCashItem(e, addCash));
 				cashItem = cashEntity.Get<Item>();
 			}
 			_itemService.TryConsume(ref cashEntity, ref cashItem);
