@@ -3,6 +3,7 @@ using UniRx;
 
 namespace EconomicsGame.Services {
 	public sealed class RuntimeData {
+		public EcsWorld World { get; }
 		public PersistantService PersistantService { get; }
 		public IdFactory IdFactory { get; } = new IdFactory();
 
@@ -16,6 +17,7 @@ namespace EconomicsGame.Services {
 		public ReactiveProperty<EcsEntity> SelectedCharacter { get; } = new ReactiveProperty<EcsEntity>();
 
 		public RuntimeData(EcsWorld world, IStore store) {
+			World = world;
 			PersistantService = new PersistantService(store);
 			var entityProvider = new EntityProvider();
 			LocationService = new LocationService(world, IdFactory, entityProvider);

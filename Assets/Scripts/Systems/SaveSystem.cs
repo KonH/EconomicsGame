@@ -7,6 +7,7 @@ using Leopotam.Ecs;
 namespace EconomicsGame.Systems {
 	public class SaveSystem : IEcsInitSystem, IEcsRunSystem {
 		readonly EcsWorld _world;
+		readonly EcsFilter<SaveStateEvent> _filter;
 		readonly RuntimeData _runtimeData;
 
 		PersistantService _persistantService;
@@ -20,7 +21,9 @@ namespace EconomicsGame.Systems {
 		}
 
 		public void Run() {
-			// TODO: trigger by event
+			if ( _filter.IsEmpty() ) {
+				return;
+			}
 			var entityCount = _world.GetAllEntities(ref _entities);
 			var persistantEntities = new List<List<object>>(entityCount);
 			foreach ( var entity in _entities ) {
