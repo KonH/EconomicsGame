@@ -14,23 +14,29 @@ namespace EconomicsGame.UnityComponents {
 		EcsEntity _entity;
 		string _name;
 		double _price;
+		bool _canBuyBase;
 		CompositeDisposable _disposable;
 
 		[SerializeField] TMP_Text _text;
 		[SerializeField] Button _buyButton;
 
-		public void Init(RuntimeData runtimeData, SceneData sceneData, EcsEntity buyer, EcsEntity entity, ref Item item, ref Trade trade, bool canBuy) {
+		readonly ReactiveProperty<bool> _canBuy = new ReactiveProperty<bool>();
+
+		public void Init(RuntimeData runtimeData, SceneData sceneData, EcsEntity buyer, EcsEntity entity, ref Item item, ref Trade trade, bool canBuyBase) {
 			_runtimeData = runtimeData;
 			_sceneData = sceneData;
 			_buyer = buyer;
 			_entity = entity;
 			gameObject.SetActive(true);
-			_buyButton.interactable = canBuy;
 			_name = item.Name;
 			_price = trade.PricePerUnit;
+			_canBuyBase = canBuyBase;
 			_disposable = new CompositeDisposable();
 			item.Count
 				.Subscribe(UpdateState)
+				.AddTo(_disposable);
+			_canBuy
+				.SubscribeToInteractable(_buyButton)
 				.AddTo(_disposable);
 		}
 
@@ -41,6 +47,18 @@ namespace EconomicsGame.UnityComponents {
 
 		void Start() {
 			_buyButton.onClick.AddListener(OnBuyClick);
+		}
+
+		void Update() {
+			_canBuy.Value = CanBuy();
+		}
+
+		bool CanBuy() {
+			if ( !_canBuyBase ) {
+				return false;
+			}
+			var currentCash = _runtimeData.CashService.GetCurrentCash(ref _buyer);
+			return currentCash >= _price;
 		}
 
 		void UpdateState(double count) {

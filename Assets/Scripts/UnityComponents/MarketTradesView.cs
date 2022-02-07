@@ -63,7 +63,7 @@ namespace EconomicsGame.UnityComponents {
 			ref var trade = ref entity.Get<Trade>();
 			var instance = GetOrCreateItem();
 			var selectedCharacter = _runtimeData.SelectedCharacter.Value;
-			var canBuy = selectedCharacter.IsAlive() && selectedCharacter.Has<PlayerCharacterFlag>(); // TODO: cash test, dynamic
+			var canBuy = selectedCharacter.IsAlive() && selectedCharacter.Has<PlayerCharacterFlag>();
 			instance.Init(_runtimeData, _sceneData, selectedCharacter, entity, ref item, ref trade, canBuy);
 			_items[item.Id] = instance;
 		}
