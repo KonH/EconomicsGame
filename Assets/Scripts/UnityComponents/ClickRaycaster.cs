@@ -16,14 +16,10 @@ namespace EconomicsGame.UnityComponents {
 				return;
 			}
 			var mousePos = _camera.ScreenToWorldPoint(Input.mousePosition);
-			var count = Physics2D.RaycastNonAlloc(mousePos, Vector2.zero, _raycastHits);
-			for ( var i = 0; i < count; i++ ) {
-				var hit = _raycastHits[i];
-				if ( !hit.collider ) {
-					return;
-				}
+			var hit = Physics2D.Raycast(mousePos, Vector2.zero);
+			if (hit.collider) {
 				var go = hit.collider.gameObject;
-				if ( go.TryGetComponent(out _target) ) {
+				if (go.TryGetComponent(out _target)) {
 					_target.OnClick();
 				}
 			}
